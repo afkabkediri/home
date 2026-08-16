@@ -1,0 +1,806 @@
+<script>
+    if (document.referrer === "") {
+        alert("Akses ditolak! Silakan login melalui halaman utama.");
+        window.location.href = "index.html";
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=0">
+    <title>Admin Dashboard - Liga AFKAB Kediri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' };
+    </script>
+    <style>
+        .modal { transition: opacity 0.3s ease, transform 0.3s ease; }
+        
+        /* CSS Khusus Anti-Notch (Safe Area) */
+        .notch-safe-pt { padding-top: max(1rem, env(safe-area-inset-top)); }
+        .notch-safe-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+        .notch-safe-px { 
+            padding-left: max(1.5rem, env(safe-area-inset-left)); 
+            padding-right: max(1.5rem, env(safe-area-inset-right)); 
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
+
+    <!-- Navbar Admin -->
+    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 notch-safe-pt pb-4 notch-safe-px flex justify-between items-center shadow-sm sticky top-0 z-40 transition-colors duration-300">
+        <div class="flex items-center gap-3">
+            <img src="logo.png" alt="Logo AFKAB" class="w-9 h-9 object-contain rounded-xl">
+            <div>
+                <span class="font-black text-slate-900 dark:text-white text-sm block">Panel Admin Utama</span>
+                <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Liga AFKAB Kediri</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleTheme()" id="themeBtn" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 p-2 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition border border-slate-200 dark:border-slate-700 flex items-center justify-center w-8 h-8"></button>
+            <a href="index.html" class="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border dark:border-slate-700">Beranda Web</a>
+            <a href="index.html" class="text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900 px-4 py-2 rounded-xl hover:bg-rose-100 transition">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+        
+        <!-- Tab Navigation -->
+        <div class="flex overflow-x-auto gap-2 mb-6 bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <button onclick="switchTab('pendaftaran')" id="btn-pendaftaran" class="tab-btn active bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-bold px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Verifikasi Berkas Tim</button>
+            <button onclick="switchTab('klasemen')" id="btn-klasemen" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Klasemen</button>
+            <button onclick="switchTab('topskor')" id="btn-topskor" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Top Skor</button>
+        </div>
+
+        <!-- TAB 1: PENDAFTARAN -->
+        <div id="tab-pendaftaran" class="tab-content block bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors duration-300">
+            <div class="flex justify-between items-center mb-6 border-b dark:border-slate-800 pb-4">
+                <div>
+                    <h1 class="text-xl font-black text-slate-900 dark:text-white">Verifikasi Berkas Tim Peserta</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Kelola status validasi dan pesan catatan untuk setiap tim.</p>
+                </div>
+                <button onclick="loadDataPendaftaran()" class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> Muat Ulang
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-left text-xs min-w-[1000px]">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold border-b dark:border-slate-800">
+                            <th class="p-3.5">Kode & Klub</th>
+                            <th class="p-3.5">Kategori & Jersey</th>
+                            <th class="p-3.5">Kontak & Email</th>
+                            <th class="p-3.5 text-center">Data Tim</th>
+                            <th class="p-3.5">Dokumen PDF</th>
+                            <th class="p-3.5">Status</th>
+                            <th class="p-3.5 w-64">Aksi & Catatan Admin</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: KLASEMEN -->
+        <div id="tab-klasemen" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form Tambah Klasemen -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Tambah / Update Tim</h2>
+                    <p class="text-xs text-slate-500 mb-6">Masukkan statistik terbaru tim.</p>
+                    <form id="formKlasemen" class="space-y-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Nama Klub / Tim</label>
+                            <input type="text" id="klas_klub" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Main (Match)</label>
+                                <input type="number" id="klas_main" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Menang (M)</label>
+                                <input type="number" id="klas_m" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Seri (S)</label>
+                                <input type="number" id="klas_s" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Kalah (K)</label>
+                                <input type="number" id="klas_k" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Gol Memasukkan (GM)</label>
+                                <input type="number" id="klas_gm" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Gol Kemasukan (GK)</label>
+                                <input type="number" id="klas_gk" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Point</label>
+                            <input type="number" id="klas_point" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan Data Klasemen</button>
+                    </form>
+                </div>
+                <!-- Tabel Klasemen -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between items-center mb-4 border-b dark:border-slate-800 pb-3">
+                        <h2 class="font-black text-lg text-slate-900 dark:text-white">Daftar Klasemen</h2>
+                        <button onclick="loadKlasemen()" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Muat Ulang</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs min-w-[700px]">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-bold border-b dark:border-slate-800">
+                                    <th class="p-3 text-center">No</th>
+                                    <th class="p-3">Team</th>
+                                    <th class="p-3 text-center">Match</th>
+                                    <th class="p-3 text-center">M</th>
+                                    <th class="p-3 text-center">S</th>
+                                    <th class="p-3 text-center">K</th>
+                                    <th class="p-3 text-center">GM</th>
+                                    <th class="p-3 text-center">GK</th>
+                                    <th class="p-3 text-center">SG</th>
+                                    <th class="p-3 text-center font-black">Point</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelKlasemenBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: TOP SKOR -->
+        <div id="tab-topskor" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form Tambah Top Skor -->
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Tambah Pencetak Gol</h2>
+                    <p class="text-xs text-slate-500 mb-6">Masukkan data pemain dan jumlah gol.</p>
+                    <form id="formTopSkor" class="space-y-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Nama Pemain</label>
+                            <input type="text" id="ts_nama" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Asal Klub</label>
+                            <input type="text" id="ts_klub" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Jumlah Gol</label>
+                            <input type="number" id="ts_gol" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan Data Top Skor</button>
+                    </form>
+                </div>
+                <!-- Tabel Top Skor -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between items-center mb-4 border-b dark:border-slate-800 pb-3">
+                        <h2 class="font-black text-lg text-slate-900 dark:text-white">Daftar Top Skor</h2>
+                        <button onclick="loadTopSkor()" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Muat Ulang</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs min-w-[500px]">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-bold border-b dark:border-slate-800">
+                                    <th class="p-3">Nama Pemain</th>
+                                    <th class="p-3">Klub</th>
+                                    <th class="p-3 text-center font-black">Gol</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelTopSkorBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modals Pendaftaran (Tetap dipertahankan dari kode sebelumnya) -->
+    <!-- MODAL DETAIL PEMAIN -->
+    <div id="modalPemain" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 max-w-3xl w-full p-6 md:p-8 rounded-3xl shadow-2xl max-h-[85vh] flex flex-col border dark:border-slate-800">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-4">
+                <h3 id="modalTitle" class="text-base font-black text-slate-900 dark:text-white">Daftar Pemain & Berkas</h3>
+                <button onclick="tutupModal('modalPemain')" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            <div id="modalContent" class="overflow-y-auto flex-grow space-y-3 pr-1"></div>
+            <div class="mt-4 pt-3 border-t dark:border-slate-800 text-right">
+                <button onclick="tutupModal('modalPemain')" class="bg-slate-900 dark:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL DETAIL OFFICIAL -->
+    <div id="modalOfficial" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 max-w-xl w-full p-6 md:p-8 rounded-3xl shadow-2xl max-h-[85vh] flex flex-col border dark:border-slate-800">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-4">
+                <h3 id="modalOfficialTitle" class="text-base font-black text-slate-900 dark:text-white">Daftar Official Tim</h3>
+                <button onclick="tutupModal('modalOfficial')" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            <div id="modalOfficialContent" class="overflow-y-auto flex-grow space-y-3 pr-1"></div>
+            <div class="mt-4 pt-3 border-t dark:border-slate-800 text-right">
+                <button onclick="tutupModal('modalOfficial')" class="bg-slate-900 dark:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+    <!-- MODAL NOTIFIKASI KUSTOM -->
+    <div id="notifModal" class="modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-3xl shadow-2xl text-center border dark:border-slate-800">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-emerald-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <h3 class="text-base font-black text-slate-900 dark:text-white mb-1">Berhasil</h3>
+            <p id="notifText" class="text-xs text-slate-500 dark:text-slate-400 mb-6">Proses selesai.</p>
+            <button onclick="tutupModal('notifModal')" class="w-full bg-emerald-600 text-white py-3 rounded-2xl text-xs font-bold hover:bg-emerald-700 transition">OK, Mengerti</button>
+        </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI HAPUS -->
+    <div id="konfirmasiHapusModal" class="hidden modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[70]">
+        <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-3xl shadow-2xl text-center border dark:border-slate-800">
+            <div class="w-14 h-14 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-200 dark:border-rose-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white mb-1">Konfirmasi Hapus</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="flex gap-3">
+                <button onclick="tutupModal('konfirmasiHapusModal')" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-3 rounded-2xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">Batal</button>
+                <button onclick="eksekusiHapus()" class="w-full bg-rose-600 text-white py-3 rounded-2xl text-xs font-bold hover:bg-rose-700 transition shadow-sm">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiURL = 'https://sheetdb.io/api/v1/c6tesoe4jyz55'; 
+        
+        // Setup Tema
+        const themeBtn = document.getElementById('themeBtn');
+        const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`;
+        const iconSun = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`;
+        if (document.documentElement.classList.contains('dark')) themeBtn.innerHTML = iconSun;
+        else themeBtn.innerHTML = iconMoon;
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); themeBtn.innerHTML = iconMoon;
+            } else {
+                document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); themeBtn.innerHTML = iconSun;
+            }
+        }
+
+        function showNotif(pesan, panggilUlang = null) {
+            document.getElementById('notifText').innerText = pesan;
+            document.getElementById('notifModal').classList.remove('opacity-0', 'pointer-events-none');
+            if(panggilUlang) setTimeout(panggilUlang, 500);
+        }
+        function tutupModal(id) { 
+            const m = document.getElementById(id); m.classList.add('hidden'); m.classList.add('opacity-0', 'pointer-events-none'); 
+        }
+
+        // --- SISTEM TABS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-emerald-50', 'dark:bg-emerald-950/50', 'text-emerald-700', 'dark:text-emerald-400', 'font-bold');
+                el.classList.add('text-slate-600', 'dark:text-slate-400');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const btn = document.getElementById('btn-' + tabId);
+            btn.classList.add('bg-emerald-50', 'dark:bg-emerald-950/50', 'text-emerald-700', 'dark:text-emerald-400', 'font-bold');
+            btn.classList.remove('text-slate-600', 'dark:text-slate-400');
+        }
+
+        // ================= TAB 1: PENDAFTARAN (DIPERBARUI DENGAN ANTI-CACHE & LOADING) =================
+        function loadDataPendaftaran() {
+            const tbody = document.getElementById('adminTableBody'); 
+            
+            // 1. Tampilkan indikator loading agar tombol terasa berfungsi
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-xs text-slate-500 font-medium animate-pulse">Memuat data terbaru dari server... Mohon tunggu.</td></tr>`;
+            
+            // 2. Tambahkan timestamp untuk membypass cache browser (Force Refresh)
+            const noCacheURL = `${apiURL}?t=${new Date().getTime()}`;
+
+            fetch(noCacheURL)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = ''; // Bersihkan tabel
+                    
+                    // Cek jika database kosong
+                    if (!data || data.length === 0 || (data.length === 1 && Object.keys(data[0]).length === 0)) {
+                        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-xs text-slate-500">Belum ada tim yang mendaftar.</td></tr>`;
+                        return;
+                    }
+
+                    data.forEach((item) => {
+                        if (!item.nama_tim) return; // Lewati jika baris data kosong
+
+                        let badgeColor = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800";
+                        if(item.status === 'Valid') badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 font-bold";
+                        if(item.status === 'Ditolak') badgeColor = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800 font-bold";
+                        
+                        let renderDocLink = (val) => {
+                            if (val && val !== 'Tidak ada' && val.trim() !== '') {
+                                if (val.includes('ERROR')) return `<span class="text-rose-500 font-bold text-[10px]">Gagal Upload</span>`;
+                                return `<a href="${val}" target="_blank" class="text-blue-600 dark:text-blue-400 underline font-bold">Selesai</a>`;
+                            } return `<span class="text-slate-400">Tidak ada</span>`;
+                        };
+
+                        const officialSafe = encodeURIComponent(item.daftar_official || '[]');
+                        const pemainSafe = encodeURIComponent(item.daftar_pemain || '[]');
+
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 align-top transition">
+                                <td class="p-3.5"><span class="text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-blue-600 border">${item.kode_unik || '-'}</span><br><b class="text-slate-900 dark:text-white text-sm block mt-1">${item.nama_tim}</b><span class="text-[11px] text-slate-400">${item.asal_daerah}</span></td>
+                                <td class="p-3.5 text-slate-600 dark:text-slate-300"><span class="bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 px-2 py-0.5 rounded font-bold text-[10px] inline-block mb-1">${item.kategori_tim}</span><br><div class="text-[10px]">H: ${item.jersey_home}</div><div class="text-[10px]">A: ${item.jersey_away}</div></td>
+                                <td class="p-3.5 font-mono text-[11px] text-slate-600 dark:text-slate-300 space-y-0.5"><div>Telp: ${item.kontak_pj}</div><div class="text-blue-600">Email: ${item.email_tim}</div></td>
+                                <td class="p-3.5 text-center space-y-1">
+                                    <button onclick="bukaModalOfficial('${item.nama_tim}', '${officialSafe}')" class="bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 border border-indigo-200 px-3 py-1 rounded-lg text-[10px] font-bold w-full hover:bg-indigo-100 transition">Cek Official</button>
+                                    <button onclick="bukaModalPemain('${item.nama_tim}', '${pemainSafe}')" class="bg-blue-50 dark:bg-blue-950/50 text-blue-600 border border-blue-200 px-3 py-1 rounded-lg text-[10px] font-bold w-full hover:bg-blue-100 transition">18 Pemain</button>
+                                </td>
+                                <td class="p-3.5 space-y-1"><div class="text-[10px]">Pemain: ${renderDocLink(item.dokumen_pendukung_pemain)}</div><div class="text-[10px]">Bayar: ${renderDocLink(item.dokumen_bukti_bayar)}</div><div class="text-[10px]">Akta: ${renderDocLink(item.dokumen_akta_tim)}</div></td>
+                                <td class="p-3.5"><span class="px-3 py-1 rounded-full text-[10px] ${badgeColor}">${item.status}</span></td>
+                                <td class="p-3.5 space-y-2">
+                                    <textarea id="pesan_${item.nama_tim}" class="w-full p-2 border rounded-xl text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white">${item.pesan_admin || ''}</textarea>
+                                    <div class="flex gap-2"><button onclick="updateStatus('${item.nama_tim}', 'Valid')" class="w-full bg-emerald-600 text-white py-1.5 rounded-lg text-[10px] font-bold hover:bg-emerald-700">Valid</button><button onclick="updateStatus('${item.nama_tim}', 'Ditolak')" class="w-full bg-rose-600 text-white py-1.5 rounded-lg text-[10px] font-bold hover:bg-rose-700">Tolak</button></div>
+                                </td>
+                            </tr>`;
+                    });
+                })
+                .catch(err => {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-xs text-rose-500 font-bold">Gagal memuat data. Silakan periksa koneksi internet Anda.</td></tr>`;
+                });
+        }
+
+        // ================= FUNGSI BUKA MODAL OFFICIAL & PEMAIN =================
+        function bukaModalOfficial(namaTim, encodedStr) {
+            document.getElementById('modalOfficialTitle').innerText = "Official Tim - " + namaTim;
+            const contentDiv = document.getElementById('modalOfficialContent');
+            contentDiv.innerHTML = '';
+            
+            try {
+                // Decode data yang sebelumnya dikodekan
+                let jsonStr = decodeURIComponent(encodedStr);
+                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+                if (typeof data === 'string') data = JSON.parse(data);
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        contentDiv.innerHTML += `
+                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm">
+                                <p class="font-black text-slate-900 dark:text-white">${item.nama}</p>
+                                <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-2">${item.jabatan}</p>
+                                <div class="flex justify-between items-center text-xs border-t dark:border-slate-700 pt-2 mt-2">
+                                    <span><b class="text-slate-500">Telp:</b> ${item.telp}</span>
+                                    <a href="${item.link_foto}" target="_blank" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data official.</p>';
+                }
+            } catch (e) {
+                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
+            }
+            
+            const m = document.getElementById('modalOfficial');
+            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+
+        function bukaModalPemain(namaTim, encodedStr) {
+            document.getElementById('modalTitle').innerText = "18 Pemain - " + namaTim;
+            const contentDiv = document.getElementById('modalContent');
+            contentDiv.innerHTML = '';
+            
+            try {
+                // Decode data yang sebelumnya dikodekan
+                let jsonStr = decodeURIComponent(encodedStr);
+                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+                if (typeof data === 'string') data = JSON.parse(data);
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        contentDiv.innerHTML += `
+                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                                <div>
+                                    <div class="mb-1">
+                                        <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded mr-1">No. ${item.no}</span>
+                                    </div>
+                                    <b class="text-slate-900 dark:text-white text-sm">${item.nama}</b>
+                                    <p class="text-[11px] font-bold text-slate-500 mt-0.5">${item.posisi} | ${item.kategori}</p>
+                                </div>
+                                <div class="text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 sm:text-right">
+                                    <p><b>TTL:</b> ${item.tempat_lahir}, ${item.tgl_lahir}</p>
+                                    <p><b>Alamat:</b> ${item.alamat}</p>
+                                    <a href="${item.link}" target="_blank" class="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data pemain.</p>';
+                }
+            } catch (e) {
+                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
+            }
+            
+            const m = document.getElementById('modalPemain');
+            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+        function updateStatus(namaTim, statusBaru) {
+            const pesanValue = document.getElementById(`pesan_${namaTim}`).value;
+            fetch(`${apiURL}/nama_tim/${namaTim}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: { status: statusBaru, pesan_admin: pesanValue } }) })
+            .then(res => res.json()).then(() => showNotif(`Status "${namaTim}" diubah ke ${statusBaru}.`, loadDataPendaftaran));
+        }
+
+        // ================= TAB 2: KLASEMEN =================
+        function loadKlasemen() {
+            document.getElementById('tabelKlasemenBody').innerHTML = `<tr><td colspan="11" class="text-center p-4 text-xs">Memuat data klasemen...</td></tr>`;
+            fetch(`${apiURL}?sheet=klasemen`).then(res => res.json()).then(data => {
+                const tbody = document.getElementById('tabelKlasemenBody'); tbody.innerHTML = '';
+                
+                // Perankingan: Urutkan Point terbesar, jika sama urutkan SG terbesar
+                data.sort((a,b) => {
+                    let pointA = parseInt(a.point) || 0;
+                    let pointB = parseInt(b.point) || 0;
+                    if (pointB !== pointA) return pointB - pointA;
+                    
+                    let sgA = parseInt(a.sg) || 0;
+                    let sgB = parseInt(b.sg) || 0;
+                    return sgB - sgA;
+                });
+
+                data.forEach((item, index) => {
+                    if(!item.id) return;
+                    let sg = (parseInt(item.gm) || 0) - (parseInt(item.gk) || 0);
+                    let rank = index + 1;
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <td class="p-3 text-center font-bold text-slate-500">${rank}</td>
+                            <td class="p-3 font-bold text-slate-900 dark:text-white">${item.team}</td>
+                            <td class="p-3 text-center">${item.match}</td>
+                            <td class="p-3 text-center">${item.m}</td>
+                            <td class="p-3 text-center">${item.s}</td>
+                            <td class="p-3 text-center">${item.k}</td>
+                            <td class="p-3 text-center">${item.gm}</td>
+                            <td class="p-3 text-center">${item.gk}</td>
+                            <td class="p-3 text-center font-bold">${sg >= 0 ? '+' + sg : sg}</td>
+                            <td class="p-3 text-center font-black text-emerald-600 dark:text-emerald-400">${item.point}</td>
+                            <td class="p-3 text-center flex justify-center gap-2">
+                                <button onclick="editKlasemen('${item.team}', '${item.match}', '${item.m}', '${item.s}', '${item.k}', '${item.gm}', '${item.gk}', '${item.point}')" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg transition">Edit</button>
+                                <button onclick="hapusData('klasemen', '${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-lg transition">Hapus</button>
+                            </td>
+                        </tr>`;
+                });
+            });
+        }
+
+        function editKlasemen(team, match, m, s, k, gm, gk, point) {
+            document.getElementById('klas_klub').value = team;
+            document.getElementById('klas_main').value = match;
+            document.getElementById('klas_m').value = m;
+            document.getElementById('klas_s').value = s;
+            document.getElementById('klas_k').value = k;
+            document.getElementById('klas_gm').value = gm;
+            document.getElementById('klas_gk').value = gk;
+            document.getElementById('klas_point').value = point;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('formKlasemen').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const teamInput = document.getElementById('klas_klub').value.trim();
+            const match = document.getElementById('klas_main').value;
+            const m = document.getElementById('klas_m').value;
+            const s = document.getElementById('klas_s').value;
+            const k = document.getElementById('klas_k').value;
+            const gm = document.getElementById('klas_gm').value;
+            const gk = document.getElementById('klas_gk').value;
+            const point = document.getElementById('klas_point').value;
+            const sg = parseInt(gm) - parseInt(gk); // Hitung otomatis SG
+
+            fetch(`${apiURL}/search?team=${encodeURIComponent(teamInput)}&sheet=klasemen`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const updateData = { match: match, m: m, s: s, k: k, gm: gm, gk: gk, sg: sg, point: point };
+                        fetch(`${apiURL}/team/${encodeURIComponent(teamInput)}?sheet=klasemen`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ data: updateData })
+                        })
+                        .then(res => res.json())
+                        .then(() => {
+                            showNotif(`Statistik tim ${teamInput} berhasil diperbarui.`, loadKlasemen);
+                            document.getElementById('formKlasemen').reset();
+                        });
+                    } else {
+                        const id = 'KLS-' + Date.now();
+                        const newData = { id: id, team: teamInput, match: match, m: m, s: s, k: k, gm: gm, gk: gk, sg: sg, point: point };
+                        fetch(`${apiURL}?sheet=klasemen`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ data: [newData] })
+                        })
+                        .then(res => res.json())
+                        .then(() => {
+                            showNotif(`Tim baru ${teamInput} berhasil ditambahkan.`, loadKlasemen);
+                            document.getElementById('formKlasemen').reset();
+                        });
+                    }
+                })
+                .catch(err => alert("Terjadi kesalahan: " + err));
+        });
+
+        // ================= TAB 3: TOP SKOR =================
+        function loadTopSkor() {
+            document.getElementById('tabelTopSkorBody').innerHTML = `<tr><td colspan="4" class="text-center p-4 text-xs">Memuat data top skor...</td></tr>`;
+            fetch(`${apiURL}?sheet=topskor`).then(res => res.json()).then(data => {
+                const tbody = document.getElementById('tabelTopSkorBody'); tbody.innerHTML = '';
+                // Urutkan berdasarkan gol terbesar
+                data.sort((a,b) => parseInt(b.gol) - parseInt(a.gol));
+                data.forEach(item => {
+                    if(!item.id) return;
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <td class="p-3 font-bold text-slate-900 dark:text-white">${item.nama}</td>
+                            <td class="p-3 text-slate-500">${item.klub}</td>
+                            <td class="p-3 text-center font-black text-emerald-600 dark:text-emerald-400">${item.gol}</td>
+                            <td class="p-3 text-center flex justify-center gap-2">
+                                <button onclick="editTopSkor('${item.nama}', '${item.klub}', '${item.gol}')" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg transition">Edit</button>
+                                <button onclick="hapusData('topskor', '${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-lg transition">Hapus</button>
+                            </td>
+                        </tr>`;
+                });
+            });
+        }
+
+        // Fungsi melempar data ke form saat tombol Edit ditekan
+        function editTopSkor(nama, klub, gol) {
+            document.getElementById('ts_nama').value = nama;
+            document.getElementById('ts_klub').value = klub;
+            document.getElementById('ts_gol').value = gol;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('formTopSkor').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const namaInput = document.getElementById('ts_nama').value.trim();
+            const klubInput = document.getElementById('ts_klub').value.trim();
+            const golInput = document.getElementById('ts_gol').value;
+
+            // Cek apakah pemain sudah ada di database
+            fetch(`${apiURL}/search?nama=${encodeURIComponent(namaInput)}&sheet=topskor`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        // UPDATE JIKA PEMAIN SUDAH ADA
+                        const updateData = { klub: klubInput, gol: golInput };
+                        fetch(`${apiURL}/nama/${encodeURIComponent(namaInput)}?sheet=topskor`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ data: updateData })
+                        })
+                        .then(res => res.json())
+                        .then(() => {
+                            showNotif(`Gol pemain ${namaInput} berhasil diperbarui.`, loadTopSkor);
+                            document.getElementById('formTopSkor').reset();
+                        });
+                    } else {
+                        // TAMBAH BARU JIKA PEMAIN BELUM ADA
+                        const id = 'TS-' + Date.now();
+                        const newData = { id: id, nama: namaInput, klub: klubInput, gol: golInput };
+                        fetch(`${apiURL}?sheet=topskor`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ data: [newData] })
+                        })
+                        .then(res => res.json())
+                        .then(() => {
+                            showNotif(`Pemain baru ${namaInput} berhasil ditambahkan.`, loadTopSkor);
+                            document.getElementById('formTopSkor').reset();
+                        });
+                    }
+                })
+                .catch(err => alert("Terjadi kesalahan: " + err));
+        });
+
+        // ================= FUNGSI HAPUS KUSTOM =================
+        let targetHapusSheet = '';
+        let targetHapusId = '';
+
+        function hapusData(sheetName, id) {
+            targetHapusSheet = sheetName;
+            targetHapusId = id;
+            
+            // Tampilkan modal kustom
+            const m = document.getElementById('konfirmasiHapusModal');
+            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+
+        function eksekusiHapus() {
+            // Tutup modal konfirmasi
+            tutupModal('konfirmasiHapusModal'); 
+            
+            // Eksekusi penghapusan ke API
+            fetch(`${apiURL}/id/${targetHapusId}?sheet=${targetHapusSheet}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(() => {
+                showNotif("Data berhasil dihapus.");
+                if (targetHapusSheet === 'klasemen') loadKlasemen();
+                else loadTopSkor();
+            })
+            .catch(err => {
+                alert("Terjadi kesalahan saat menghapus data.");
+            });
+        }
+
+        // ================= FUNGSI BUKA MODAL OFFICIAL & PEMAIN =================
+        function bukaModalOfficial(namaTim, encodedStr) {
+            document.getElementById('modalOfficialTitle').innerText = "Official Tim - " + namaTim;
+            const contentDiv = document.getElementById('modalOfficialContent');
+            contentDiv.innerHTML = '';
+            
+            try {
+                // Decode data yang sebelumnya dikodekan
+                let jsonStr = decodeURIComponent(encodedStr);
+                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+                if (typeof data === 'string') data = JSON.parse(data);
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        contentDiv.innerHTML += `
+                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm">
+                                <p class="font-black text-slate-900 dark:text-white">${item.nama}</p>
+                                <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-2">${item.jabatan}</p>
+                                <div class="flex justify-between items-center text-xs border-t dark:border-slate-700 pt-2 mt-2">
+                                    <span><b class="text-slate-500">Telp:</b> ${item.telp}</span>
+                                    <a href="${item.link_foto}" target="_blank" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data official.</p>';
+                }
+            } catch (e) {
+                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
+            }
+            
+            const m = document.getElementById('modalOfficial');
+            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+
+        function bukaModalPemain(namaTim, encodedStr) {
+            document.getElementById('modalTitle').innerText = "18 Pemain - " + namaTim;
+            const contentDiv = document.getElementById('modalContent');
+            contentDiv.innerHTML = '';
+            
+            try {
+                // Decode data yang sebelumnya dikodekan
+                let jsonStr = decodeURIComponent(encodedStr);
+                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+                if (typeof data === 'string') data = JSON.parse(data);
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        contentDiv.innerHTML += `
+                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                                <div>
+                                    <div class="mb-1">
+                                        <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded mr-1">No. ${item.no}</span>
+                                    </div>
+                                    <b class="text-slate-900 dark:text-white text-sm">${item.nama}</b>
+                                    <p class="text-[11px] font-bold text-slate-500 mt-0.5">${item.posisi} | ${item.kategori}</p>
+                                </div>
+                                <div class="text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 sm:text-right">
+                                    <p><b>TTL:</b> ${item.tempat_lahir}, ${item.tgl_lahir}</p>
+                                    <p><b>Alamat:</b> ${item.alamat}</p>
+                                    <a href="${item.link}" target="_blank" class="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data pemain.</p>';
+                }
+            } catch (e) {
+                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
+            }
+            
+            const m = document.getElementById('modalPemain');
+            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }// ================= FUNGSI BUKA MODAL OFFICIAL & PEMAIN =================
+        function bukaModalOfficial(namaTim, encodedStr) {
+            document.getElementById('modalOfficialTitle').innerText = "Official Tim - " + namaTim;
+            const contentDiv = document.getElementById('modalOfficialContent');
+            contentDiv.innerHTML = '';
+            
+            try {
+                // Decode data yang sebelumnya dikodekan
+                let jsonStr = decodeURIComponent(encodedStr);
+                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+                if (typeof data === 'string') data = JSON.parse(data);
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        contentDiv.innerHTML += `
+                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm">
+                                <p class="font-black text-slate-900 dark:text-white">${item.nama}</p>
+                                <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-2">${item.jabatan}</p>
+                                <div class="flex justify-between items-center text-xs border-t dark:border-slate-700 pt-2 mt-2">
+                                    <span><b class="text-slate-500">Telp:</b> ${item.telp}</span>
+                                    <a href="${item.link_foto}" target="_blank" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data official.</p>';
+                }
+            } catch (e) {
+                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
+            }
+            
+            const m = document.getElementById('modalOfficial');
+            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+
+        function bukaModalPemain(namaTim, encodedStr) {
+            document.getElementById('modalTitle').innerText = "18 Pemain - " + namaTim;
+            const contentDiv = document.getElementById('modalContent');
+            contentDiv.innerHTML = '';
+            
+            try {
+                // Decode data yang sebelumnya dikodekan
+                let jsonStr = decodeURIComponent(encodedStr);
+                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
+                if (typeof data === 'string') data = JSON.parse(data);
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        contentDiv.innerHTML += `
+                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                                <div>
+                                    <div class="mb-1">
+                                        <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded mr-1">No. ${item.no}</span>
+                                    </div>
+                                    <b class="text-slate-900 dark:text-white text-sm">${item.nama}</b>
+                                    <p class="text-[11px] font-bold text-slate-500 mt-0.5">${item.posisi} | ${item.kategori}</p>
+                                </div>
+                                <div class="text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 sm:text-right">
+                                    <p><b>TTL:</b> ${item.tempat_lahir}, ${item.tgl_lahir}</p>
+                                    <p><b>Alamat:</b> ${item.alamat}</p>
+                                    <a href="${item.link}" target="_blank" class="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data pemain.</p>';
+                }
+            } catch (e) {
+                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
+            }
+            
+            const m = document.getElementById('modalPemain');
+            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        }
+
+        // Inisialisasi awal
+        loadDataPendaftaran();
+        loadKlasemen();
+        loadTopSkor();
+    </script>
+</body>
+</html>
