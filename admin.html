@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=0">
-    <title>Admin Dashboard - Liga AFKAB Kediri</title>
+    <title>Admin Dashboard - AFKAB Kediri</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
@@ -28,38 +28,60 @@
             padding-left: max(1.5rem, env(safe-area-inset-left)); 
             padding-right: max(1.5rem, env(safe-area-inset-right)); 
         }
+        /* --- ANIMASI DROPDOWN YANG HALUS --- */
+        .dropdown-anim {
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+        }
+        .dropdown-anim.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
+
+<body class="bg-slate-100 dark:bg-slate-950 min-h-screen font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300 relative">
+
+    <!-- LAYER BACKGROUND GAMBAR & BLUR -->
+    <div class="fixed inset-0 -z-10 bg-cover bg-center filter blur-[1px] scale-105 opacity-90 dark:opacity-20" style="background-image: url('bg.png');"></div>
+    
+    <!-- LAPISAN OVERLAY -->
+    <div class="fixed inset-0 -z-10 bg-white/70 dark:bg-slate-950/85"></div>
 
     <!-- Navbar Admin -->
-    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 notch-safe-pt pb-4 notch-safe-px flex justify-between items-center shadow-sm sticky top-0 z-40 transition-colors duration-300">
+    <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 notch-safe-pt pb-4 notch-safe-px flex justify-between items-center shadow-sm sticky top-0 z-40 transition-colors duration-300">
         <div class="flex items-center gap-3">
-            <img src="logo.png" alt="Logo AFKAB" class="w-9 h-9 object-contain rounded-xl">
+            <img src="logoafkab.png" alt="Logo AFKAB" class="w-9 h-9 object-contain rounded-xl">
             <div>
                 <span class="font-black text-slate-900 dark:text-white text-sm block">Panel Admin Utama</span>
-                <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Liga AFKAB Kediri</span>
+                <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">AFKAB Kediri</span>
             </div>
         </div>
         <div class="flex items-center gap-3">
             <button onclick="toggleTheme()" id="themeBtn" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 p-2 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition border border-slate-200 dark:border-slate-700 flex items-center justify-center w-8 h-8"></button>
             <a href="index.html" class="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border dark:border-slate-700">Beranda Web</a>
             <a href="index.html" class="text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900 px-4 py-2 rounded-xl hover:bg-rose-100 transition">Logout</a>
+            <button onclick="switchTab('pengaturan')" id="btn-pengaturan" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Pengaturan Akun</button>
+            <button onclick="switchTab('maintenance')" id="btn-maintenance" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Pengaturan Maintenance</button>
         </div>
     </nav>
 
     <!-- Main Container -->
-    <div class="max-w-7xl mx-auto p-4 md:p-8">
+    <div class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
         
         <!-- Tab Navigation -->
-        <div class="flex overflow-x-auto gap-2 mb-6 bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+        <div id="main-tab-nav" class="flex overflow-x-auto gap-2 mb-6 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <button onclick="switchTab('pendaftaran')" id="btn-pendaftaran" class="tab-btn active bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-bold px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Verifikasi Berkas Tim</button>
             <button onclick="switchTab('klasemen')" id="btn-klasemen" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Klasemen</button>
             <button onclick="switchTab('topskor')" id="btn-topskor" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Top Skor</button>
+            <button onclick="switchTab('jadwal')" id="btn-jadwal" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Jadwal & Skor</button>
         </div>
 
         <!-- TAB 1: PENDAFTARAN -->
-        <div id="tab-pendaftaran" class="tab-content block bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors duration-300">
+        <div id="tab-pendaftaran" class="tab-content block bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors duration-300">
             <div class="flex justify-between items-center mb-6 border-b dark:border-slate-800 pb-4">
                 <div>
                     <h1 class="text-xl font-black text-slate-900 dark:text-white">Verifikasi Berkas Tim Peserta</h1>
@@ -90,9 +112,28 @@
 
         <!-- TAB 2: KLASEMEN -->
         <div id="tab-klasemen" class="tab-content hidden">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="flex gap-2">
+                    <button onclick="gantiAdminKlasemen('Putra')" id="btnAdminPutra" class="px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md">Klasemen Putra</button>
+                    <button onclick="gantiAdminKlasemen('Putri')" id="btnAdminPutri" class="px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Klasemen Putri</button>
+                </div>
+                <div>
+                    <!-- DROPDOWN KUSTOM ADMIN KLASEMEN -->
+                    <div class="relative">
+                        <input type="hidden" id="selectAdminGrupKlasemen" value="A">
+                        <button onclick="toggleDropdownCustom(event, 'adminGrupDropdown')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 outline-none shadow-sm flex items-center gap-2 w-48 justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                            <span id="labelAdminGrupTerpilih">Grup Samarawijaya</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform duration-200" id="iconAdminGrup" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="adminGrupDropdown" class="dropdown-anim absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl py-2 z-50 backdrop-blur-md">
+                            <button onclick="pilihAdminGrup('A', 'Grup Samarawijaya')" class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-emerald-50 dark:hover:bg-slate-800 hover:text-emerald-600 transition">Grup Samarawijaya</button>
+                            <button onclick="pilihAdminGrup('B', 'Grup Kertajaya')" class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-emerald-50 dark:hover:bg-slate-800 hover:text-emerald-600 transition">Grup Kertajaya</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Form Tambah Klasemen -->
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
                     <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Tambah / Update Tim</h2>
                     <p class="text-xs text-slate-500 mb-6">Masukkan statistik terbaru tim.</p>
                     <form id="formKlasemen" class="space-y-4">
@@ -133,8 +174,7 @@
                         <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan Data Klasemen</button>
                     </form>
                 </div>
-                <!-- Tabel Klasemen -->
-                <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="lg:col-span-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
                     <div class="flex justify-between items-center mb-4 border-b dark:border-slate-800 pb-3">
                         <h2 class="font-black text-lg text-slate-900 dark:text-white">Daftar Klasemen</h2>
                         <button onclick="loadKlasemen()" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Muat Ulang</button>
@@ -165,10 +205,16 @@
 
         <!-- TAB 3: TOP SKOR -->
         <div id="tab-topskor" class="tab-content hidden">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="flex gap-2">
+                    <button onclick="gantiAdminTopSkorKat('Putra')" id="btnAdminTopSkorPutra" class="px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md">Top Skor Putra</button>
+                    <button onclick="gantiAdminTopSkorKat('Putri')" id="btnAdminTopSkorPutri" class="px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Top Skor Putri</button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Form Tambah Top Skor -->
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
-                    <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Tambah Pencetak Gol</h2>
+                <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1" id="formTitleTopSkor">Tambah Pencetak Gol Putra</h2>
                     <p class="text-xs text-slate-500 mb-6">Masukkan data pemain dan jumlah gol.</p>
                     <form id="formTopSkor" class="space-y-4">
                         <div>
@@ -183,19 +229,23 @@
                             <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Jumlah Gol</label>
                             <input type="number" id="ts_gol" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
                         </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Link Foto (Google Drive)</label>
+                            <input type="url" id="ts_foto" placeholder="https://drive.google.com/..." class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                        </div>
                         <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan Data Top Skor</button>
                     </form>
                 </div>
-                <!-- Tabel Top Skor -->
-                <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="lg:col-span-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
                     <div class="flex justify-between items-center mb-4 border-b dark:border-slate-800 pb-3">
-                        <h2 class="font-black text-lg text-slate-900 dark:text-white">Daftar Top Skor</h2>
+                        <h2 class="font-black text-lg text-slate-900 dark:text-white" id="tabelTitleTopSkor">Daftar Top Skor Putra</h2>
                         <button onclick="loadTopSkor()" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Muat Ulang</button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs min-w-[500px]">
+                        <table class="w-full text-left text-xs min-w-[550px]">
                             <thead>
                                 <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-bold border-b dark:border-slate-800">
+                                    <th class="p-3 text-center">Foto</th>
                                     <th class="p-3">Nama Pemain</th>
                                     <th class="p-3">Klub</th>
                                     <th class="p-3 text-center font-black">Gol</th>
@@ -209,10 +259,124 @@
             </div>
         </div>
 
+        <!-- TAB JADWAL & SKOR -->
+        <div id="tab-jadwal" class="tab-content hidden">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="flex gap-2">
+                    <button onclick="gantiAdminJadwalKat('Putra')" id="btnJadwalPutra" class="px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md">Jadwal Putra</button>
+                    <button onclick="gantiAdminJadwalKat('Putri')" id="btnJadwalPutri" class="px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">Jadwal Putri</button>
+                </div>
+                <div class="flex items-center gap-2 relative" style="z-index: 99;">
+                    <label class="text-xs font-bold text-slate-600 dark:text-slate-400">Pilih Minggu:</label>
+                    <div class="relative">
+                        <input type="hidden" id="filterAdminMinggu" value="1">
+                        <button type="button" onclick="toggleDropdownCustom(event, 'adminMingguDropdown')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 outline-none shadow-sm flex items-center gap-2 w-36 justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                            <span id="labelAdminMingguTerpilih">Minggu ke-1</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform duration-200" id="iconAdminMinggu" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="adminMingguDropdown" class="dropdown-anim absolute right-0 top-full mt-2 w-36 max-h-56 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl py-2 z-[9999] backdrop-blur-md">
+                            <script>
+                                for(let i=1; i<=12; i++) {
+                                    document.write(`<button type="button" onclick="pilihAdminMinggu('${i}', 'Minggu ke-${i}')" class="w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-emerald-50 dark:hover:bg-slate-800 hover:text-emerald-600 transition">Minggu ke-${i}</button>`);
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form Tambah Laga -->
+                <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Tambah Laga Baru</h2>
+                    <p id="infoKapasitasJadwal" class="text-xs text-slate-500 mb-6">Atur jadwal pertandingan.</p>
+                    <form id="formJadwal" class="space-y-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Pilih Minggu Pertandingan</label>
+                            <select id="jadwal_minggu" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none text-slate-900 dark:text-white">
+                                <script>
+                                    for(let i=1; i<=12; i++) {
+                                        document.write(`<option value="${i}">Minggu ke-${i}</option>`);
+                                    }
+                                </script>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Tanggal (Cth: 20 Juni 2026)</label>
+                                <input type="text" id="jadwal_tgl" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Jam (Cth: 15:00 WIB)</label>
+                                <input type="text" id="jadwal_jam" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none text-slate-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Tim 1 (Kandang / Home)</label>
+                            <input type="text" id="jadwal_tim1" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Tim 2 (Tandang / Away)</label>
+                            <input type="text" id="jadwal_tim2" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Lokasi Pertandingan</label>
+                            <input type="text" id="jadwal_lokasi" value="GOR Jayabaya Kediri" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none text-slate-900 dark:text-white">
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan Jadwal</button>
+                    </form>
+                </div>
+
+                <!-- Tabel Daftar Jadwal & Input Skor Admin -->
+                <div class="lg:col-span-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between items-center mb-4 border-b dark:border-slate-800 pb-3">
+                        <h2 class="font-black text-lg text-slate-900 dark:text-white" id="titleTabelJadwalAdmin">Daftar Jadwal & Skor</h2>
+                        <button onclick="loadJadwalAdmin()" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg">Muat Ulang</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs min-w-[650px]">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 font-bold border-b dark:border-slate-800">
+                                    <th class="p-3 text-center">Waktu</th>
+                                    <th class="p-3">Pertandingan & Skor Akhir</th>
+                                    <th class="p-3 text-center">Status Laga</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelJadwalAdminBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Modals Pendaftaran (Tetap dipertahankan dari kode sebelumnya) -->
-    <!-- MODAL DETAIL PEMAIN -->
+    <!-- MODAL INPUT SKOR AKHIR -->
+    <div id="modalSkor" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-3xl shadow-2xl border dark:border-slate-800">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
+                <h3 class="text-sm font-black text-slate-900 dark:text-white">Input Skor Akhir Pertandingan</h3>
+                <button onclick="tutupModal('modalSkor')" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            <input type="hidden" id="skor_id_laga">
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label id="labelTim1" class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Skor Tim 1</label>
+                    <input type="number" id="skor_tim1_val" min="0" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                </div>
+                <div>
+                    <label id="labelTim2" class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Skor Tim 2</label>
+                    <input type="number" id="skor_tim2_val" min="0" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="tutupModal('modalSkor')" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2.5 rounded-xl text-xs font-bold">Batal</button>
+                <button onclick="simpanSkorAkhir()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-sm">Simpan Skor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals Pendaftaran -->
     <div id="modalPemain" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white dark:bg-slate-900 max-w-3xl w-full p-6 md:p-8 rounded-3xl shadow-2xl max-h-[85vh] flex flex-col border dark:border-slate-800">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-4">
@@ -225,7 +389,7 @@
             </div>
         </div>
     </div>
-    <!-- MODAL DETAIL OFFICIAL -->
+    
     <div id="modalOfficial" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white dark:bg-slate-900 max-w-xl w-full p-6 md:p-8 rounded-3xl shadow-2xl max-h-[85vh] flex flex-col border dark:border-slate-800">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4 mb-4">
@@ -238,7 +402,7 @@
             </div>
         </div>
     </div>
-    <!-- MODAL NOTIFIKASI KUSTOM -->
+    
     <div id="notifModal" class="modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
         <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-3xl shadow-2xl text-center border dark:border-slate-800">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-emerald-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -248,7 +412,6 @@
         </div>
     </div>
 
-    <!-- MODAL KONFIRMASI HAPUS -->
     <div id="konfirmasiHapusModal" class="hidden modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[70]">
         <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-3xl shadow-2xl text-center border dark:border-slate-800">
             <div class="w-14 h-14 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-200 dark:border-rose-800">
@@ -265,10 +428,107 @@
         </div>
     </div>
 
+    <!-- TAB PENGATURAN AKUN ADMIN -->
+    <div id="tab-pengaturan" class="tab-content hidden">
+        <div class="max-w-xl mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-6 border-b dark:border-slate-800 pb-4">
+                <div>
+                    <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Pengaturan Kredensial Admin</h2>
+                    <p class="text-xs text-slate-500">Ubah username dan password untuk login ke panel admin.</p>
+                </div>
+                <!-- Tombol Kembali untuk Menampilkan Tab Navigasi Lagi -->
+                <button type="button" onclick="switchTab('pendaftaran')" class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition">
+                    &larr; Kembali
+                </button>
+            </div>
+            
+            <form id="formPengaturanAdmin" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Username Baru</label>
+                    <input type="text" id="admin_new_user" required placeholder="Masukkan username baru" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Password Baru</label>
+                    <input type="password" id="admin_new_pass" required placeholder="Masukkan password baru" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan Perubahan Akun</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL KUSTOM UBAH STATUS LAGA -->
+    <div id="modalStatusLaga" class="modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-3xl shadow-2xl border dark:border-slate-800">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
+                <h3 class="text-sm font-black text-slate-900 dark:text-white">Ubah Status Laga</h3>
+                <button onclick="tutupModal('modalStatusLaga')" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            <input type="hidden" id="status_id_laga">
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Pilih Status Baru</label>
+                    <select id="statusBaruVal" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                        <option value="Belum Dimulai">Belum Dimulai</option>
+                        <option value="Berlangsung">Berlangsung (LIVE)</option>
+                        <option value="Selesai">Selesai (FT)</option>
+                        <option value="Ditunda">Ditunda</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="tutupModal('modalStatusLaga')" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-2.5 rounded-xl text-xs font-bold">Batal</button>
+                <button onclick="simpanStatusLaga()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-sm">Simpan Status</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KUSTOM ERROR LOGIN -->
+    <div id="loginErrorModal" class="modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-6 rounded-3xl shadow-2xl text-center border dark:border-slate-800">
+            <div class="w-14 h-14 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-200 dark:border-rose-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white mb-1">Login Gagal</h3>
+            <p id="loginErrorText" class="text-xs text-slate-500 dark:text-slate-400 mb-6">Kredensial login salah!</p>
+            <button onclick="tutupModal('loginErrorModal')" class="w-full bg-slate-900 dark:bg-slate-800 text-white py-3 rounded-2xl text-xs font-bold hover:bg-black dark:hover:bg-slate-700 transition">Coba Lagi</button>
+        </div>
+    </div>
+
+    <!-- TAB 5: PENGATURAN MAINTENANCE -->
+    <div id="tab-maintenance" class="tab-content hidden">
+        <div class="max-w-xl mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-6 border-b dark:border-slate-800 pb-4">
+                <div>
+                    <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Pengaturan Mode Maintenance</h2>
+                    <p class="text-xs text-slate-500">Aktifkan popup pemeliharaan sistem untuk pengunjung web.</p>
+                </div>
+                <button type="button" onclick="switchTab('pendaftaran')" class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition">
+                    &larr; Kembali
+                </button>
+            </div>
+            
+            <form id="formMaintenanceAdmin" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Status Sistem</label>
+                    <select id="main_status" class="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                        <option value="off">Normal (Situs Aktif)</option>
+                        <option value="on">Maintenance (Aktifkan Popup)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Pesan Pengumuman Maintenance</label>
+                    <textarea id="main_pesan" rows="3" placeholder="Tuliskan alasan atau informasi pemeliharaan..." class="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white outline-none">Mohon maaf, sistem sedang dalam pemeliharaan berkala. Silakan kunjungi kembali beberapa saat lagi.</textarea>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan Pengaturan Maintenance</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        const apiURL = 'https://sheetdb.io/api/v1/c6tesoe4jyz55'; 
+        const apiURL = 'https://sheetdb.io/api/v1/3lux4m24q5w6c'; 
         
-        // Setup Tema
         const themeBtn = document.getElementById('themeBtn');
         const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`;
         const iconSun = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`;
@@ -292,43 +552,56 @@
             const m = document.getElementById(id); m.classList.add('hidden'); m.classList.add('opacity-0', 'pointer-events-none'); 
         }
 
-        // --- SISTEM TABS ---
         function switchTab(tabId) {
+            // Sembunyikan semua konten tab
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+            // Reset style semua tombol tab
             document.querySelectorAll('.tab-btn').forEach(el => {
                 el.classList.remove('bg-emerald-50', 'dark:bg-emerald-950/50', 'text-emerald-700', 'dark:text-emerald-400', 'font-bold');
                 el.classList.add('text-slate-600', 'dark:text-slate-400');
             });
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            // Cek dan kelola tampilan Bar Navigation Tab Utama
+            const mainTabNav = document.getElementById('main-tab-nav');
+            if (mainTabNav) {
+                if (tabId === 'pengaturan') {
+                    mainTabNav.classList.add('hidden'); // Sembunyikan bar navigation
+                } else {
+                    mainTabNav.classList.remove('hidden'); // Tampilkan kembali bar navigation
+                }
+            }
+
+            // Tampilkan tab yang dipilih
+            const activeTabContent = document.getElementById('tab-' + tabId);
+            if (activeTabContent) {
+                activeTabContent.classList.remove('hidden');
+            }
+
+            // Aktifkan style tombol jika ada
             const btn = document.getElementById('btn-' + tabId);
-            btn.classList.add('bg-emerald-50', 'dark:bg-emerald-950/50', 'text-emerald-700', 'dark:text-emerald-400', 'font-bold');
-            btn.classList.remove('text-slate-600', 'dark:text-slate-400');
+            if (btn) {
+                btn.classList.add('bg-emerald-50', 'dark:bg-emerald-950/50', 'text-emerald-700', 'dark:text-emerald-400', 'font-bold');
+                btn.classList.remove('text-slate-600', 'dark:text-slate-400');
+            }
         }
 
-        // ================= TAB 1: PENDAFTARAN (DIPERBARUI DENGAN ANTI-CACHE & LOADING) =================
         function loadDataPendaftaran() {
             const tbody = document.getElementById('adminTableBody'); 
-            
-            // 1. Tampilkan indikator loading agar tombol terasa berfungsi
             tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-xs text-slate-500 font-medium animate-pulse">Memuat data terbaru dari server... Mohon tunggu.</td></tr>`;
-            
-            // 2. Tambahkan timestamp untuk membypass cache browser (Force Refresh)
             const noCacheURL = `${apiURL}?t=${new Date().getTime()}`;
 
             fetch(noCacheURL)
                 .then(res => res.json())
                 .then(data => {
-                    tbody.innerHTML = ''; // Bersihkan tabel
-                    
-                    // Cek jika database kosong
+                    tbody.innerHTML = '';
                     if (!data || data.length === 0 || (data.length === 1 && Object.keys(data[0]).length === 0)) {
                         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-xs text-slate-500">Belum ada tim yang mendaftar.</td></tr>`;
                         return;
                     }
 
                     data.forEach((item) => {
-                        if (!item.nama_tim) return; // Lewati jika baris data kosong
-
+                        if (!item.nama_tim) return;
                         let badgeColor = "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800";
                         if(item.status === 'Valid') badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 font-bold";
                         if(item.status === 'Ditolak') badgeColor = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800 font-bold";
@@ -361,23 +634,19 @@
                             </tr>`;
                     });
                 })
-                .catch(err => {
+                .catch(() => {
                     tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-xs text-rose-500 font-bold">Gagal memuat data. Silakan periksa koneksi internet Anda.</td></tr>`;
                 });
         }
 
-        // ================= FUNGSI BUKA MODAL OFFICIAL & PEMAIN =================
         function bukaModalOfficial(namaTim, encodedStr) {
             document.getElementById('modalOfficialTitle').innerText = "Official Tim - " + namaTim;
             const contentDiv = document.getElementById('modalOfficialContent');
             contentDiv.innerHTML = '';
-            
             try {
-                // Decode data yang sebelumnya dikodekan
                 let jsonStr = decodeURIComponent(encodedStr);
                 let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
                 if (typeof data === 'string') data = JSON.parse(data);
-
                 if (data && data.length > 0) {
                     data.forEach(item => {
                         contentDiv.innerHTML += `
@@ -396,22 +665,17 @@
             } catch (e) {
                 contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
             }
-            
-            const m = document.getElementById('modalOfficial');
-            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+            document.getElementById('modalOfficial').classList.remove('hidden', 'opacity-0', 'pointer-events-none');
         }
 
         function bukaModalPemain(namaTim, encodedStr) {
             document.getElementById('modalTitle').innerText = "18 Pemain - " + namaTim;
             const contentDiv = document.getElementById('modalContent');
             contentDiv.innerHTML = '';
-            
             try {
-                // Decode data yang sebelumnya dikodekan
                 let jsonStr = decodeURIComponent(encodedStr);
                 let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
                 if (typeof data === 'string') data = JSON.parse(data);
-
                 if (data && data.length > 0) {
                     data.forEach(item => {
                         contentDiv.innerHTML += `
@@ -436,57 +700,75 @@
             } catch (e) {
                 contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
             }
-            
-            const m = document.getElementById('modalPemain');
-            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-        }
-        function updateStatus(namaTim, statusBaru) {
-            const pesanValue = document.getElementById(`pesan_${namaTim}`).value;
-            fetch(`${apiURL}/nama_tim/${namaTim}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data: { status: statusBaru, pesan_admin: pesanValue } }) })
-            .then(res => res.json()).then(() => showNotif(`Status "${namaTim}" diubah ke ${statusBaru}.`, loadDataPendaftaran));
+            document.getElementById('modalPemain').classList.remove('hidden', 'opacity-0', 'pointer-events-none');
         }
 
-        // ================= TAB 2: KLASEMEN =================
+        let adminKategoriKlasemen = 'Putra';
+        function gantiAdminKlasemen(kategori) {
+            adminKategoriKlasemen = kategori;
+            const btnPutra = document.getElementById('btnAdminPutra');
+            const btnPutri = document.getElementById('btnAdminPutri');
+            if (kategori === 'Putra') {
+                btnPutra.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md";
+                btnPutri.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
+            } else {
+                btnPutri.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md";
+                btnPutra.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
+            }
+            loadKlasemen();
+        }
+
+        function getSheetNameKlasemen() {
+            const grup = document.getElementById('selectAdminGrupKlasemen') ? document.getElementById('selectAdminGrupKlasemen').value.toLowerCase() : 'a';
+            const katLower = adminKategoriKlasemen.toLowerCase();
+            return `klasemen${katLower}_${grup}`;
+        }
+
         function loadKlasemen() {
-            document.getElementById('tabelKlasemenBody').innerHTML = `<tr><td colspan="11" class="text-center p-4 text-xs">Memuat data klasemen...</td></tr>`;
-            fetch(`${apiURL}?sheet=klasemen`).then(res => res.json()).then(data => {
-                const tbody = document.getElementById('tabelKlasemenBody'); tbody.innerHTML = '';
-                
-                // Perankingan: Urutkan Point terbesar, jika sama urutkan SG terbesar
-                data.sort((a,b) => {
-                    let pointA = parseInt(a.point) || 0;
-                    let pointB = parseInt(b.point) || 0;
-                    if (pointB !== pointA) return pointB - pointA;
-                    
-                    let sgA = parseInt(a.sg) || 0;
-                    let sgB = parseInt(b.sg) || 0;
-                    return sgB - sgA;
+            const sheet = getSheetNameKlasemen();
+            const grupLabel = document.getElementById('selectAdminGrupKlasemen') ? document.getElementById('selectAdminGrupKlasemen').value : 'A';
+            document.getElementById('tabelKlasemenBody').innerHTML = `<tr><td colspan="11" class="text-center p-4 text-xs">Memuat data klasemen ${adminKategoriKlasemen} Grup ${grupLabel}...</td></tr>`;
+            
+            fetch(`${apiURL}?sheet=${sheet}&t=${new Date().getTime()}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('tabelKlasemenBody'); 
+                    tbody.innerHTML = '';
+                    if (!Array.isArray(data)) {
+                        tbody.innerHTML = `<tr><td colspan="11" class="text-center p-4 text-xs text-rose-500">Sheet '${sheet}' belum tersedia di Google Sheets.</td></tr>`;
+                        return;
+                    }
+                    data.sort((a,b) => {
+                        let pointA = parseInt(a.point) || 0;
+                        let pointB = parseInt(b.point) || 0;
+                        if (pointB !== pointA) return pointB - pointA;
+                        let sgA = parseInt(a.sg) || 0;
+                        let sgB = parseInt(b.sg) || 0;
+                        return sgB - sgA;
+                    });
+                    data.forEach((item, index) => {
+                        if(!item.id) return;
+                        let sg = (parseInt(item.gm) || 0) - (parseInt(item.gk) || 0);
+                        let rank = index + 1;
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="p-3 text-center font-bold text-slate-500">${rank}</td>
+                                <td class="p-3 font-bold text-slate-900 dark:text-white">${item.team}</td>
+                                <td class="p-3 text-center">${item.match}</td>
+                                <td class="p-3 text-center">${item.m}</td>
+                                <td class="p-3 text-center">${item.s}</td>
+                                <td class="p-3 text-center">${item.k}</td>
+                                <td class="p-3 text-center">${item.gm}</td>
+                                <td class="p-3 text-center">${item.gk}</td>
+                                <td class="p-3 text-center font-bold">${sg >= 0 ? '+' + sg : sg}</td>
+                                <td class="p-3 text-center font-black text-emerald-600 dark:text-emerald-400">${item.point}</td>
+                                <td class="p-3 text-center flex justify-center gap-2">
+                                    <button onclick="editKlasemen('${item.team}', '${item.match}', '${item.m}', '${item.s}', '${item.k}', '${item.gm}', '${item.gk}', '${item.point}')" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg transition">Edit</button>
+                                    <button onclick="hapusData('${sheet}', '${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-lg transition">Hapus</button>
+                                </td>
+                            </tr>`;
+                    });
                 });
-
-                data.forEach((item, index) => {
-                    if(!item.id) return;
-                    let sg = (parseInt(item.gm) || 0) - (parseInt(item.gk) || 0);
-                    let rank = index + 1;
-
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                            <td class="p-3 text-center font-bold text-slate-500">${rank}</td>
-                            <td class="p-3 font-bold text-slate-900 dark:text-white">${item.team}</td>
-                            <td class="p-3 text-center">${item.match}</td>
-                            <td class="p-3 text-center">${item.m}</td>
-                            <td class="p-3 text-center">${item.s}</td>
-                            <td class="p-3 text-center">${item.k}</td>
-                            <td class="p-3 text-center">${item.gm}</td>
-                            <td class="p-3 text-center">${item.gk}</td>
-                            <td class="p-3 text-center font-bold">${sg >= 0 ? '+' + sg : sg}</td>
-                            <td class="p-3 text-center font-black text-emerald-600 dark:text-emerald-400">${item.point}</td>
-                            <td class="p-3 text-center flex justify-center gap-2">
-                                <button onclick="editKlasemen('${item.team}', '${item.match}', '${item.m}', '${item.s}', '${item.k}', '${item.gm}', '${item.gk}', '${item.point}')" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg transition">Edit</button>
-                                <button onclick="hapusData('klasemen', '${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-lg transition">Hapus</button>
-                            </td>
-                        </tr>`;
-                });
-            });
         }
 
         function editKlasemen(team, match, m, s, k, gm, gk, point) {
@@ -503,6 +785,7 @@
 
         document.getElementById('formKlasemen').addEventListener('submit', function(e) {
             e.preventDefault();
+            const sheet = getSheetNameKlasemen();
             const teamInput = document.getElementById('klas_klub').value.trim();
             const match = document.getElementById('klas_main').value;
             const m = document.getElementById('klas_m').value;
@@ -511,34 +794,34 @@
             const gm = document.getElementById('klas_gm').value;
             const gk = document.getElementById('klas_gk').value;
             const point = document.getElementById('klas_point').value;
-            const sg = parseInt(gm) - parseInt(gk); // Hitung otomatis SG
+            const sg = parseInt(gm) - parseInt(gk);
 
-            fetch(`${apiURL}/search?team=${encodeURIComponent(teamInput)}&sheet=klasemen`)
+            fetch(`${apiURL}/search?team=${encodeURIComponent(teamInput)}&sheet=${sheet}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data && data.length > 0) {
                         const updateData = { match: match, m: m, s: s, k: k, gm: gm, gk: gk, sg: sg, point: point };
-                        fetch(`${apiURL}/team/${encodeURIComponent(teamInput)}?sheet=klasemen`, {
+                        fetch(`${apiURL}/team/${encodeURIComponent(teamInput)}?sheet=${sheet}`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ data: updateData })
                         })
                         .then(res => res.json())
                         .then(() => {
-                            showNotif(`Statistik tim ${teamInput} berhasil diperbarui.`, loadKlasemen);
+                            showNotif(`Statistik tim ${teamInput} (${adminKategoriKlasemen}) berhasil diperbarui.`, loadKlasemen);
                             document.getElementById('formKlasemen').reset();
                         });
                     } else {
                         const id = 'KLS-' + Date.now();
                         const newData = { id: id, team: teamInput, match: match, m: m, s: s, k: k, gm: gm, gk: gk, sg: sg, point: point };
-                        fetch(`${apiURL}?sheet=klasemen`, {
+                        fetch(`${apiURL}?sheet=${sheet}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ data: [newData] })
                         })
                         .then(res => res.json())
                         .then(() => {
-                            showNotif(`Tim baru ${teamInput} berhasil ditambahkan.`, loadKlasemen);
+                            showNotif(`Tim baru ${teamInput} (${adminKategoriKlasemen}) berhasil ditambahkan.`, loadKlasemen);
                             document.getElementById('formKlasemen').reset();
                         });
                     }
@@ -546,261 +829,500 @@
                 .catch(err => alert("Terjadi kesalahan: " + err));
         });
 
-        // ================= TAB 3: TOP SKOR =================
-        function loadTopSkor() {
-            document.getElementById('tabelTopSkorBody').innerHTML = `<tr><td colspan="4" class="text-center p-4 text-xs">Memuat data top skor...</td></tr>`;
-            fetch(`${apiURL}?sheet=topskor`).then(res => res.json()).then(data => {
-                const tbody = document.getElementById('tabelTopSkorBody'); tbody.innerHTML = '';
-                // Urutkan berdasarkan gol terbesar
-                data.sort((a,b) => parseInt(b.gol) - parseInt(a.gol));
-                data.forEach(item => {
-                    if(!item.id) return;
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                            <td class="p-3 font-bold text-slate-900 dark:text-white">${item.nama}</td>
-                            <td class="p-3 text-slate-500">${item.klub}</td>
-                            <td class="p-3 text-center font-black text-emerald-600 dark:text-emerald-400">${item.gol}</td>
-                            <td class="p-3 text-center flex justify-center gap-2">
-                                <button onclick="editTopSkor('${item.nama}', '${item.klub}', '${item.gol}')" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg transition">Edit</button>
-                                <button onclick="hapusData('topskor', '${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-lg transition">Hapus</button>
-                            </td>
-                        </tr>`;
-                });
-            });
+        let adminTopSkorKat = 'Putra';
+        function gantiAdminTopSkorKat(kategori) {
+            adminTopSkorKat = kategori;
+            const btnPutra = document.getElementById('btnAdminTopSkorPutra');
+            const btnPutri = document.getElementById('btnAdminTopSkorPutri');
+            const formTitle = document.getElementById('formTitleTopSkor');
+            const tabelTitle = document.getElementById('tabelTitleTopSkor');
+
+            if (kategori === 'Putra') {
+                btnPutra.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md";
+                btnPutri.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
+                if(formTitle) formTitle.innerText = "Tambah Pencetak Gol Putra";
+                if(tabelTitle) tabelTitle.innerText = "Daftar Top Skor Putra";
+            } else {
+                btnPutri.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md";
+                btnPutra.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
+                if(formTitle) formTitle.innerText = "Tambah Pencetak Gol Putri";
+                if(tabelTitle) tabelTitle.innerText = "Daftar Top Skor Putri";
+            }
+            loadTopSkor();
         }
 
-        // Fungsi melempar data ke form saat tombol Edit ditekan
-        function editTopSkor(nama, klub, gol) {
+        function getSheetNameTopSkor() {
+            return adminTopSkorKat === 'Putra' ? 'topskor' : 'topskorputri';
+        }
+
+        function loadTopSkor() {
+            const sheet = getSheetNameTopSkor();
+            const tbody = document.getElementById('tabelTopSkorBody');
+            if(!tbody) return;
+
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-xs">Memuat data top skor ${adminTopSkorKat}...</td></tr>`;
+            
+            fetch(`${apiURL}?sheet=${sheet}&t=${new Date().getTime()}`)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+                    if (!Array.isArray(data)) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-xs text-rose-500">Sheet '${sheet}' belum tersedia di Google Sheets.</td></tr>`;
+                        return;
+                    }
+
+                    const filteredData = data.filter(item => item && item.id);
+                    filteredData.sort((a,b) => (parseInt(b.gol) || 0) - (parseInt(a.gol) || 0));
+                    
+                    if (filteredData.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-xs text-slate-400">Belum ada data top skor ${adminTopSkorKat}.</td></tr>`;
+                        return;
+                    }
+
+                    filteredData.forEach(item => {
+                        let fotoDisplay = item.foto ? `<img src="${item.foto}" class="w-10 h-10 object-cover rounded-xl mx-auto border dark:border-slate-700">` : `<div class="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mx-auto text-slate-400 text-[10px]">No Pic</div>`;
+                        
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="p-3 text-center">${fotoDisplay}</td>
+                                <td class="p-3 font-bold text-slate-900 dark:text-white">${item.nama}</td>
+                                <td class="p-3 text-slate-500">${item.klub}</td>
+                                <td class="p-3 text-center font-black text-emerald-600 dark:text-emerald-400">${item.gol}</td>
+                                <td class="p-3 text-center flex justify-center gap-2">
+                                    <button onclick="editTopSkor('${item.nama}', '${item.klub}', '${item.gol}', '${item.foto || ''}')" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg transition">Edit</button>
+                                    <button onclick="hapusData('${sheet}', '${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-lg transition">Hapus</button>
+                                </td>
+                            </tr>`;
+                    });
+                })
+                .catch(() => {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-xs text-rose-500">Gagal memuat data dari server.</td></tr>`;
+                });
+        }
+
+        function editTopSkor(nama, klub, gol, foto) {
             document.getElementById('ts_nama').value = nama;
             document.getElementById('ts_klub').value = klub;
             document.getElementById('ts_gol').value = gol;
+            document.getElementById('ts_foto').value = foto;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        document.getElementById('formTopSkor').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const namaInput = document.getElementById('ts_nama').value.trim();
-            const klubInput = document.getElementById('ts_klub').value.trim();
-            const golInput = document.getElementById('ts_gol').value;
+        const formTopSkorEl = document.getElementById('formTopSkor');
+        if (formTopSkorEl) {
+            const newFormTopSkor = formTopSkorEl.cloneNode(true);
+            formTopSkorEl.parentNode.replaceChild(newFormTopSkor, formTopSkorEl);
 
-            // Cek apakah pemain sudah ada di database
-            fetch(`${apiURL}/search?nama=${encodeURIComponent(namaInput)}&sheet=topskor`)
+            newFormTopSkor.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const sheet = getSheetNameTopSkor();
+                const namaInput = document.getElementById('ts_nama').value.trim();
+                const klubInput = document.getElementById('ts_klub').value.trim();
+                const golInput = document.getElementById('ts_gol').value;
+                const fotoInput = document.getElementById('ts_foto').value.trim();
+
+                fetch(`${apiURL}?sheet=${sheet}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const existingItem = Array.isArray(data) ? data.find(item => item.nama && item.nama.trim().toLowerCase() === namaInput.toLowerCase()) : null;
+
+                        if (existingItem) {
+                            const updateData = { klub: klubInput, gol: golInput, foto: fotoInput };
+                            fetch(`${apiURL}/id/${existingItem.id}?sheet=${sheet}`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ data: updateData })
+                            })
+                            .then(res => res.json())
+                            .then(() => {
+                                showNotif(`Data pemain ${namaInput} (${adminTopSkorKat}) berhasil diperbarui.`, loadTopSkor);
+                                newFormTopSkor.reset();
+                            });
+                        } else {
+                            const id = 'TS-' + Date.now();
+                            const newData = { id: id, nama: namaInput, klub: klubInput, gol: golInput, foto: fotoInput };
+                            fetch(`${apiURL}?sheet=${sheet}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ data: [newData] })
+                            })
+                            .then(res => res.json())
+                            .then(() => {
+                                showNotif(`Pemain baru ${namaInput} (${adminTopSkorKat}) berhasil ditambahkan.`, loadTopSkor);
+                                newFormTopSkor.reset();
+                            });
+                        }
+                    })
+                    .catch(err => alert("Terjadi kesalahan: " + err));
+            });
+        }
+
+        let adminJadwalKat = 'Putra';
+        function gantiAdminJadwalKat(kategori) {
+            adminJadwalKat = kategori;
+            const btnPutra = document.getElementById('btnJadwalPutra');
+            const btnPutri = document.getElementById('btnJadwalPutri');
+
+            if (kategori === 'Putra') {
+                btnPutra.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md";
+                btnPutri.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
+                document.getElementById('infoKapasitasJadwal').innerText = "Kategori Putra: Maksimal 6 pertandingan per minggu.";
+            } else {
+                btnPutri.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md";
+                btnPutra.className = "px-6 py-2 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
+                document.getElementById('infoKapasitasJadwal').innerText = "Kategori Putri: Maksimal 5 pertandingan per minggu.";
+            }
+            loadJadwalAdmin();
+        }
+
+        function getSheetNameJadwal() {
+            return adminJadwalKat === 'Putra' ? 'jadwal' : 'jadwalputri';
+        }
+
+        let cacheJadwalData = [];
+
+        function loadJadwalAdmin() {
+            const sheet = getSheetNameJadwal();
+            const mingguPilih = document.getElementById('filterAdminMinggu').value;
+            const titleEl = document.getElementById('titleTabelJadwalAdmin');
+            if(titleEl) titleEl.innerText = `Daftar Jadwal & Skor ${adminJadwalKat} - Minggu ke-${mingguPilih}`;
+            
+            const tbody = document.getElementById('tabelJadwalAdminBody');
+            if(!tbody) return;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-xs">Memuat jadwal...</td></tr>`;
+
+            fetch(`${apiURL}?sheet=${sheet}&t=${Date.now()}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data && data.length > 0) {
-                        // UPDATE JIKA PEMAIN SUDAH ADA
-                        const updateData = { klub: klubInput, gol: golInput };
-                        fetch(`${apiURL}/nama/${encodeURIComponent(namaInput)}?sheet=topskor`, {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ data: updateData })
-                        })
-                        .then(res => res.json())
-                        .then(() => {
-                            showNotif(`Gol pemain ${namaInput} berhasil diperbarui.`, loadTopSkor);
-                            document.getElementById('formTopSkor').reset();
-                        });
-                    } else {
-                        // TAMBAH BARU JIKA PEMAIN BELUM ADA
-                        const id = 'TS-' + Date.now();
-                        const newData = { id: id, nama: namaInput, klub: klubInput, gol: golInput };
-                        fetch(`${apiURL}?sheet=topskor`, {
+                    tbody.innerHTML = '';
+                    if (!Array.isArray(data)) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center p-6 text-rose-500">Sheet '${sheet}' belum memiliki header kolom atau gagal diakses.</td></tr>`;
+                        return;
+                    }
+                    cacheJadwalData = data;
+                    const filtered = data.filter(item => item && parseInt(item.minggu) === parseInt(mingguPilih) && item.id);
+                    if(filtered.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center p-6 text-slate-400">Belum ada jadwal untuk minggu ke-${mingguPilih}.</td></tr>`;
+                        return;
+                    }
+                    filtered.forEach(item => {
+                        let statusText = item.status || 'Belum Dimulai';
+                        let statusBadge = `<span class="bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-full text-[10px] font-bold">Belum Dimulai</span>`;
+                        
+                        if (statusText === 'Berlangsung' || statusText === 'LIVE') {
+                            statusBadge = `<span class="bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-400 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider animate-pulse">● LIVE</span>`;
+                        } else if (statusText === 'Selesai') {
+                            statusBadge = `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">FT (Selesai)</span>`;
+                        } else if (statusText === 'Ditunda') {
+                            statusBadge = `<span class="bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Ditunda</span>`;
+                        }
+
+                        let skorTampil = `<span class="text-rose-500 font-bold px-1">VS</span>`;
+                        if (item.skor_tim1 !== undefined && item.skor_tim1 !== "" && item.skor_tim2 !== undefined && item.skor_tim2 !== "") {
+                            skorTampil = `<span class="font-black text-emerald-600 dark:text-emerald-400 text-sm px-2 bg-slate-100 dark:bg-slate-800 rounded-lg">${item.skor_tim1} - ${item.skor_tim2}</span>`;
+                        }
+
+                        let tglFormatted = formatTanggal(item.tgl);
+
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="p-3 text-center"><b class="text-slate-900 dark:text-white">${tglFormatted}</b><br><span class="text-[10px] text-emerald-600">${item.jam || ''}</span></td>
+                                <td class="p-3 font-bold text-slate-800 dark:text-slate-200">${item.tim1 || ''} ${skorTampil} ${item.tim2 || ''}<br><span class="text-[10px] font-normal text-slate-400">Lokasi: ${item.lokasi || ''}</span></td>
+                                <td class="p-3 text-center">${statusBadge}</td>
+                                <td class="p-3 text-center space-x-1 whitespace-nowrap">
+                                    <button onclick="bukaModalSkor('${item.id}')" class="text-emerald-600 hover:text-emerald-800 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1.5 rounded-lg transition">Skor</button>
+                                    <button onclick="ubahStatusLaga('${item.id}', '${statusText}')" class="text-blue-600 hover:text-blue-800 font-bold bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1.5 rounded-lg transition">Status</button>
+                                    <button onclick="hapusData('${sheet}', '${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 dark:bg-rose-950/60 px-2.5 py-1.5 rounded-lg transition">Hapus</button>
+                                </td>
+                            </tr>`;
+                    });
+                })
+                .catch(() => {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center p-6 text-rose-500">Gagal terhubung ke server database.</td></tr>`;
+                });
+        }
+
+        function ubahStatusLaga(idLaga, statusSekarang) {
+            // Set ID laga ke input tersembunyi
+            document.getElementById('status_id_laga').value = idLaga;
+            
+            // Pilih otomatis status yang sedang aktif di dropdown modal
+            const selectEl = document.getElementById('statusBaruVal');
+            if (selectEl) {
+                selectEl.value = statusSekarang;
+            }
+
+            // Tampilkan modal kustom
+            const modal = document.getElementById('modalStatusLaga');
+            modal.classList.remove('hidden');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function simpanStatusLaga() {
+            const idLaga = document.getElementById('status_id_laga').value;
+            const statusBaru = document.getElementById('statusBaruVal').value;
+            const sheet = getSheetNameJadwal();
+
+            fetch(`${apiURL}/id/${idLaga}?sheet=${sheet}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: { status: statusBaru } })
+            })
+            .then(res => res.json())
+            .then(() => {
+                tutupModal('modalStatusLaga');
+                showNotif("Status laga berhasil diperbarui.", loadJadwalAdmin);
+            })
+            .catch(() => alert("Gagal memperbarui status laga."));
+        }
+
+        function bukaModalSkor(idLaga) {
+            const laga = cacheJadwalData.find(i => i.id === idLaga);
+            if(!laga) return;
+            document.getElementById('skor_id_laga').value = idLaga;
+            document.getElementById('labelTim1').innerText = `Skor ${laga.tim1}`;
+            document.getElementById('labelTim2').innerText = `Skor ${laga.tim2}`;
+            document.getElementById('skor_tim1_val').value = laga.skor_tim1 !== undefined ? laga.skor_tim1 : '';
+            document.getElementById('skor_tim2_val').value = laga.skor_tim2 !== undefined ? laga.skor_tim2 : '';
+            document.getElementById('modalSkor').classList.remove('hidden');
+            document.getElementById('modalSkor').classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function simpanSkorAkhir() {
+            const idLaga = document.getElementById('skor_id_laga').value;
+            const skor1 = document.getElementById('skor_tim1_val').value;
+            const skor2 = document.getElementById('skor_tim2_val').value;
+            const sheet = getSheetNameJadwal();
+
+            if(skor1 === "" || skor2 === "") {
+                alert("Harap masukkan angka skor untuk kedua tim.");
+                return;
+            }
+
+            fetch(`${apiURL}/id/${idLaga}?sheet=${sheet}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: { skor_tim1: skor1, skor_tim2: skor2, status: 'Selesai' } })
+            })
+            .then(res => res.json())
+            .then(() => {
+                tutupModal('modalSkor');
+                showNotif("Skor akhir pertandingan berhasil disimpan.", loadJadwalAdmin);
+            })
+            .catch(() => alert("Gagal menyimpan skor pertandingan."));
+        }
+
+        const formJadwalEl = document.getElementById('formJadwal');
+        if (formJadwalEl) {
+            const newFormJadwal = formJadwalEl.cloneNode(true);
+            formJadwalEl.parentNode.replaceChild(newFormJadwal, formJadwalEl);
+
+            newFormJadwal.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const sheet = getSheetNameJadwal();
+                const minggu = document.getElementById('jadwal_minggu').value;
+                const tgl = document.getElementById('jadwal_tgl').value.trim();
+                const jam = document.getElementById('jadwal_jam').value.trim();
+                const tim1 = document.getElementById('jadwal_tim1').value.trim();
+                const tim2 = document.getElementById('jadwal_tim2').value.trim();
+                const lokasi = document.getElementById('jadwal_lokasi').value.trim();
+
+                fetch(`${apiURL}?sheet=${sheet}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const listData = Array.isArray(data) ? data : [];
+                        const countMinggu = listData.filter(item => item && parseInt(item.minggu) === parseInt(minggu) && item.id).length;
+                        const limit = adminJadwalKat === 'Putra' ? 6 : 5;
+
+                        if (countMinggu >= limit) {
+                            alert(`Batas maksimal pertandingan untuk Liga ${adminJadwalKat} di Minggu ke-${minggu} adalah ${limit} match!`);
+                            return;
+                        }
+
+                        const id = 'JDW-' + Date.now();
+                        const newData = { id: id, minggu: minggu, tgl: tgl, jam: jam, tim1: tim1, tim2: tim2, lokasi: lokasi, status: "Belum Dimulai", skor_tim1: "", skor_tim2: "" };
+                        
+                        fetch(`${apiURL}?sheet=${sheet}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ data: [newData] })
                         })
                         .then(res => res.json())
                         .then(() => {
-                            showNotif(`Pemain baru ${namaInput} berhasil ditambahkan.`, loadTopSkor);
-                            document.getElementById('formTopSkor').reset();
+                            document.getElementById('filterAdminMinggu').value = minggu;
+                            showNotif(`Jadwal baru berhasil ditambahkan ke Minggu ke-${minggu}.`, loadJadwalAdmin);
+                            newFormJadwal.reset();
+                            document.getElementById('jadwal_minggu').value = minggu;
                         });
-                    }
-                })
-                .catch(err => alert("Terjadi kesalahan: " + err));
-        });
+                    });
+            });
+        }
 
-        // ================= FUNGSI HAPUS KUSTOM =================
         let targetHapusSheet = '';
         let targetHapusId = '';
 
         function hapusData(sheetName, id) {
             targetHapusSheet = sheetName;
             targetHapusId = id;
-            
-            // Tampilkan modal kustom
-            const m = document.getElementById('konfirmasiHapusModal');
-            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+            document.getElementById('konfirmasiHapusModal').classList.remove('hidden', 'opacity-0', 'pointer-events-none');
         }
 
         function eksekusiHapus() {
-            // Tutup modal konfirmasi
             tutupModal('konfirmasiHapusModal'); 
-            
-            // Eksekusi penghapusan ke API
             fetch(`${apiURL}/id/${targetHapusId}?sheet=${targetHapusSheet}`, { method: 'DELETE' })
             .then(res => res.json())
             .then(() => {
                 showNotif("Data berhasil dihapus.");
-                if (targetHapusSheet === 'klasemen') loadKlasemen();
+                if (targetHapusSheet.includes('klasemen')) loadKlasemen();
+                else if (targetHapusSheet.includes('jadwal')) loadJadwalAdmin();
                 else loadTopSkor();
             })
-            .catch(err => {
-                alert("Terjadi kesalahan saat menghapus data.");
+            .catch(() => alert("Terjadi kesalahan saat menghapus data."));
+        }
+
+        // Konversi angka serial Excel/Google Sheets (misal: 46255) ke tanggal Indonesia
+        function formatTanggal(tgl) {
+            if (!tgl) return '-';
+            let num = Number(tgl);
+            if (!isNaN(num) && num > 30000) {
+                let date = new Date(Math.round((num - 25569) * 86400 * 1000));
+                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+            return tgl; 
+        }
+
+        // Tangani form simpan kredensial admin
+        const formPengaturanAdmin = document.getElementById('formPengaturanAdmin');
+        if (formPengaturanAdmin) {
+            formPengaturanAdmin.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const newUser = document.getElementById('admin_new_user').value.trim();
+                const newPass = document.getElementById('admin_new_pass').value.trim();
+
+                if (newUser && newPass) {
+                    localStorage.setItem('admin_user', newUser);
+                    localStorage.setItem('admin_pass', newPass);
+                    showNotif("Username dan Password admin berhasil diperbarui!");
+                    formPengaturanAdmin.reset();
+                } else {
+                    alert("Username dan password tidak boleh kosong.");
+                }
             });
         }
 
-        // ================= FUNGSI BUKA MODAL OFFICIAL & PEMAIN =================
-        function bukaModalOfficial(namaTim, encodedStr) {
-            document.getElementById('modalOfficialTitle').innerText = "Official Tim - " + namaTim;
-            const contentDiv = document.getElementById('modalOfficialContent');
-            contentDiv.innerHTML = '';
-            
-            try {
-                // Decode data yang sebelumnya dikodekan
-                let jsonStr = decodeURIComponent(encodedStr);
-                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
-                if (typeof data === 'string') data = JSON.parse(data);
+        // Muat data pengaturan maintenance saat admin membuka halaman
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedStatus = localStorage.getItem('afkab_maintenance_active') === 'true' ? 'on' : 'off';
+            const savedMsg = localStorage.getItem('afkab_maintenance_msg');
 
-                if (data && data.length > 0) {
-                    data.forEach(item => {
-                        contentDiv.innerHTML += `
-                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm">
-                                <p class="font-black text-slate-900 dark:text-white">${item.nama}</p>
-                                <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-2">${item.jabatan}</p>
-                                <div class="flex justify-between items-center text-xs border-t dark:border-slate-700 pt-2 mt-2">
-                                    <span><b class="text-slate-500">Telp:</b> ${item.telp}</span>
-                                    <a href="${item.link_foto}" target="_blank" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
-                                </div>
-                            </div>`;
-                    });
+            const statusEl = document.getElementById('main_status');
+            const pesanEl = document.getElementById('main_pesan');
+
+            if (statusEl) statusEl.value = savedStatus;
+            if (savedMsg && pesanEl) pesanEl.value = savedMsg;
+        });
+
+        // Tangani penyimpanan form pengaturan maintenance
+        const formMaintenanceAdmin = document.getElementById('formMaintenanceAdmin');
+        if (formMaintenanceAdmin) {
+            formMaintenanceAdmin.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const statusVal = document.getElementById('main_status').value;
+                const pesanVal = document.getElementById('main_pesan').value.trim();
+
+                if (statusVal === 'on') {
+                    localStorage.setItem('afkab_maintenance_active', 'true');
                 } else {
-                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data official.</p>';
+                    localStorage.setItem('afkab_maintenance_active', 'false');
                 }
-            } catch (e) {
-                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
-            }
-            
-            const m = document.getElementById('modalOfficial');
-            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+
+                if (pesanVal) {
+                    localStorage.setItem('afkab_maintenance_msg', pesanVal);
+                }
+
+                showNotif("Pengaturan mode maintenance berhasil diperbarui!");
+            });
         }
 
-        function bukaModalPemain(namaTim, encodedStr) {
-            document.getElementById('modalTitle').innerText = "18 Pemain - " + namaTim;
-            const contentDiv = document.getElementById('modalContent');
-            contentDiv.innerHTML = '';
+        // ==========================================
+        // FUNGSI ANIMASI DROPDOWN KUSTOM ADMIN
+        // ==========================================
+        function toggleDropdownCustom(event, dropdownId) {
+            event.stopPropagation();
             
-            try {
-                // Decode data yang sebelumnya dikodekan
-                let jsonStr = decodeURIComponent(encodedStr);
-                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
-                if (typeof data === 'string') data = JSON.parse(data);
-
-                if (data && data.length > 0) {
-                    data.forEach(item => {
-                        contentDiv.innerHTML += `
-                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                                <div>
-                                    <div class="mb-1">
-                                        <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded mr-1">No. ${item.no}</span>
-                                    </div>
-                                    <b class="text-slate-900 dark:text-white text-sm">${item.nama}</b>
-                                    <p class="text-[11px] font-bold text-slate-500 mt-0.5">${item.posisi} | ${item.kategori}</p>
-                                </div>
-                                <div class="text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 sm:text-right">
-                                    <p><b>TTL:</b> ${item.tempat_lahir}, ${item.tgl_lahir}</p>
-                                    <p><b>Alamat:</b> ${item.alamat}</p>
-                                    <a href="${item.link}" target="_blank" class="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
-                                </div>
-                            </div>`;
-                    });
-                } else {
-                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data pemain.</p>';
+            // Tutup dropdown lain yang sedang terbuka
+            ['adminGrupDropdown', 'adminMingguDropdown'].forEach(id => {
+                if(id !== dropdownId) {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        el.classList.remove('show');
+                        if (el.parentElement === document.body) {
+                            // Kembalikan ke tempat asal jika dipindah ke body
+                            const originalParent = document.getElementById(id === 'adminGrupDropdown' ? 'selectAdminGrupKlasemen' : 'filterAdminMinggu').parentNode;
+                            originalParent.appendChild(el);
+                        }
+                        el.style.top = '';
+                        el.style.left = '';
+                        el.style.width = '';
+                    }
+                    const iconName = id === 'adminGrupDropdown' ? 'iconAdminGrup' : 'iconAdminMinggu';
+                    const icon = document.getElementById(iconName);
+                    if(icon) icon.classList.remove('rotate-180');
                 }
-            } catch (e) {
-                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
-            }
-            
-            const m = document.getElementById('modalPemain');
-            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-        }// ================= FUNGSI BUKA MODAL OFFICIAL & PEMAIN =================
-        function bukaModalOfficial(namaTim, encodedStr) {
-            document.getElementById('modalOfficialTitle').innerText = "Official Tim - " + namaTim;
-            const contentDiv = document.getElementById('modalOfficialContent');
-            contentDiv.innerHTML = '';
-            
-            try {
-                // Decode data yang sebelumnya dikodekan
-                let jsonStr = decodeURIComponent(encodedStr);
-                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
-                if (typeof data === 'string') data = JSON.parse(data);
+            });
 
-                if (data && data.length > 0) {
-                    data.forEach(item => {
-                        contentDiv.innerHTML += `
-                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm">
-                                <p class="font-black text-slate-900 dark:text-white">${item.nama}</p>
-                                <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-2">${item.jabatan}</p>
-                                <div class="flex justify-between items-center text-xs border-t dark:border-slate-700 pt-2 mt-2">
-                                    <span><b class="text-slate-500">Telp:</b> ${item.telp}</span>
-                                    <a href="${item.link_foto}" target="_blank" class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
-                                </div>
-                            </div>`;
-                    });
+            const dropdown = document.getElementById(dropdownId);
+            const iconName = dropdownId === 'adminGrupDropdown' ? 'iconAdminGrup' : 'iconAdminMinggu';
+            const icon = document.getElementById(iconName);
+
+            if(dropdown) {
+                const isOpen = dropdown.classList.contains('show');
+                if(!isOpen) {
+                    // Pindahkan dropdown langsung ke body agar posisinya keluar dari semua batasan card/overflow
+                    if (dropdown.parentElement !== document.body) {
+                        dropdown.dataset.originalParent = dropdown.parentElement.id;
+                        document.body.appendChild(dropdown);
+                    }
+
+                    const buttonRect = event.currentTarget.getBoundingClientRect();
+
+                    dropdown.style.position = 'fixed';
+                    dropdown.style.top = (buttonRect.bottom + 8) + 'px';
+                    dropdown.style.left = buttonRect.left + 'px';
+                    dropdown.style.width = buttonRect.width + 'px';
+                    dropdown.style.zIndex = '999999';
+                    
+                    dropdown.classList.add('show');
+                    if(icon) icon.classList.add('rotate-180');
                 } else {
-                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data official.</p>';
+                    dropdown.classList.remove('show');
+                    if(icon) icon.classList.remove('rotate-180');
                 }
-            } catch (e) {
-                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
             }
-            
-            const m = document.getElementById('modalOfficial');
-            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
         }
 
-        function bukaModalPemain(namaTim, encodedStr) {
-            document.getElementById('modalTitle').innerText = "18 Pemain - " + namaTim;
-            const contentDiv = document.getElementById('modalContent');
-            contentDiv.innerHTML = '';
-            
-            try {
-                // Decode data yang sebelumnya dikodekan
-                let jsonStr = decodeURIComponent(encodedStr);
-                let data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr;
-                if (typeof data === 'string') data = JSON.parse(data);
-
-                if (data && data.length > 0) {
-                    data.forEach(item => {
-                        contentDiv.innerHTML += `
-                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm mb-3 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                                <div>
-                                    <div class="mb-1">
-                                        <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded mr-1">No. ${item.no}</span>
-                                    </div>
-                                    <b class="text-slate-900 dark:text-white text-sm">${item.nama}</b>
-                                    <p class="text-[11px] font-bold text-slate-500 mt-0.5">${item.posisi} | ${item.kategori}</p>
-                                </div>
-                                <div class="text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 sm:text-right">
-                                    <p><b>TTL:</b> ${item.tempat_lahir}, ${item.tgl_lahir}</p>
-                                    <p><b>Alamat:</b> ${item.alamat}</p>
-                                    <a href="${item.link}" target="_blank" class="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-lg font-bold hover:bg-blue-200 transition">Lihat Pas Foto</a>
-                                </div>
-                            </div>`;
-                    });
-                } else {
-                    contentDiv.innerHTML = '<p class="text-center text-sm text-slate-500 py-4">Belum ada data pemain.</p>';
+        // Tutup dropdown apabila area luar halaman diklik
+        window.addEventListener('click', function() {
+            ['adminGrupDropdown', 'adminMingguDropdown'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.remove('show');
+                    if (el.parentElement === document.body) {
+                        const originalParent = document.getElementById(id === 'adminGrupDropdown' ? 'selectAdminGrupKlasemen' : 'filterAdminMinggu').parentNode;
+                        originalParent.appendChild(el);
+                    }
                 }
-            } catch (e) {
-                contentDiv.innerHTML = '<p class="text-center text-sm text-rose-500 py-4">Terjadi kesalahan memuat data.</p>';
-            }
-            
-            const m = document.getElementById('modalPemain');
-            m.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-        }
+                const iconName = id === 'adminGrupDropdown' ? 'iconAdminGrup' : 'iconAdminMinggu';
+                const icon = document.getElementById(iconName);
+                if(icon) icon.classList.remove('rotate-180');
+            });
+        });
 
         // Inisialisasi awal
         loadDataPendaftaran();
         loadKlasemen();
         loadTopSkor();
+        loadJadwalAdmin();
     </script>
 </body>
 </html>

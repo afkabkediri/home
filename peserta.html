@@ -23,159 +23,196 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-emerald-50 dark:from-slate-950 dark:to-slate-900 min-h-screen py-12 notch-safe-pb notch-safe-px font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
+<body class="bg-slate-100 dark:bg-slate-950 min-h-screen flex flex-col justify-between font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300 relative">
+
+    <!-- LAYER BACKGROUND GAMBAR & BLUR -->
+    <div class="fixed inset-0 -z-10 bg-cover bg-center filter blur-[1px] scale-105 opacity-90 dark:opacity-20" style="background-image: url('bg.png');"></div>
     
-    <!-- Tombol Tema -->
-    <div class="max-w-2xl mx-auto flex justify-end mb-4">
-        <button onclick="toggleTheme()" class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-xl text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2">
-            <span id="themeBtn" class="flex items-center justify-center w-4 h-4"></span> <span>Ubah Tema</span>
-        </button>
-    </div>
+    <!-- LAPISAN OVERLAY -->
+    <div class="fixed inset-0 -z-10 bg-white/70 dark:bg-slate-950/85"></div>
 
-    <div class="max-w-2xl mx-auto bg-white dark:bg-slate-900 p-8 md:p-12 rounded-3xl shadow-2xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 relative">
-        <div class="mb-6">
-            <a href="index.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-emerald-600 transition bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl border dark:border-slate-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                Kembali ke Beranda
-            </a>
+    <!-- Header / Navbar -->
+    <header class="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-40 transition-colors duration-300">
+        <div class="flex items-center gap-3">
+            <img src="logo.png" alt="Logo AFKAB" class="w-12 h-12 md:w-14 md:h-14 object-contain shrink-0">
+            <div>
+                <h2 class="font-black tracking-wider text-slate-900 dark:text-white text-base md:text-lg leading-tight">AFKAB</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">KABUPATEN KEDIRI</p>
+            </div>
         </div>
-        
-        <div class="text-center mb-8">
-            <span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-emerald-200 dark:border-emerald-800">Formulir Resmi</span>
-            <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mt-2">Pendaftaran Liga AFKAB Kediri</h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Lengkapi seluruh tahapan data dengan benar dan teliti.</p>
+
+        <!-- Menu Navigasi Tengah -->
+        <nav class="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600 dark:text-slate-300">
+            <a href="index.html" class="hover:text-emerald-600 transition">Beranda</a>
+            <a href="index.html#visimisi" class="hover:text-emerald-600 transition">Visi & Misi</a>
+            <a href="index.html#galeri" class="hover:text-emerald-600 transition">Galeri</a>
+            <a href="index.html#kontak" class="hover:text-emerald-600 transition">Kontak</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+            <button onclick="toggleTheme()" id="themeBtn" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 p-2.5 rounded-xl text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition shadow-sm border border-slate-200 dark:border-slate-700 w-9 h-9 flex items-center justify-center">
+            </button>
+            <button onclick="toggleModal('loginModal')" class="flex items-center gap-2 bg-slate-900 dark:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-800 dark:hover:bg-emerald-700 transition shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                Login Admin
+            </button>
         </div>
-        
-        <form id="registrationForm" class="space-y-6">
-            <!-- STEP 1: BIODATA TIM -->
-            <div class="step-content space-y-4" id="step-1">
-                <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">1. Biodata Klub / Tim</h2>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Nama Tim / Klub</label>
-                    <input type="text" id="nama_tim" required placeholder="Contoh: Putra Kediri FC" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Asal Daerah / Kecamatan</label>
-                    <input type="text" id="asal_daerah" required placeholder="Contoh: Kecamatan Pare" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Nomor Kontak / WhatsApp Penanggung Jawab</label>
-                    <input type="number" id="kontak_pj" required placeholder="08xxxxxxxxxx" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Alamat Email Klub / Penanggung Jawab</label>
-                    <input type="email" id="email_tim" required placeholder="Contoh: official@klub.com" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Kategori Tim</label>
-                    <select id="kategori_tim" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-900 dark:text-white">
-                        <option value="Putra">Putra</option>
-                        <option value="Putri">Putri</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Jersey Home</label>
-                    <input type="text" id="jersey_home" required placeholder="Contoh: Merah-Hitam-Putih" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Jersey Away</label>
-                    <input type="text" id="jersey_away" required placeholder="Contoh: Putih-Biru-Biru" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
-                </div>
-                <button type="button" onclick="nextStep(2)" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none mt-4 flex justify-center items-center gap-2">Lanjut ke Official <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></button>
+    </header>
+
+    <!-- Main Content Formulir -->
+    <main class="max-w-2xl mx-auto px-6 py-12 w-full relative z-10 my-auto">
+        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-8 md:p-12 rounded-3xl shadow-2xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 relative">
+            <div class="mb-6">
+                <a href="sistempendaftaran.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-emerald-600 transition bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl border dark:border-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    Kembali ke Portal Pendaftaran
+                </a>
             </div>
-
-            <!-- STEP 2: BIODATA OFFICIAL -->
-            <div class="step-content hidden space-y-4" id="step-2">
-                <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">2. Biodata Official Tim</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Isi data 5 Official berikut sesuai struktur yang ada (Kosongkan jika jabatan pada nomor tersebut tidak tersedia).</p>
-                
-                <div id="officialContainer" class="space-y-4">
-                    <!-- Digenerate secara dinamis oleh JavaScript -->
-                </div>
-
-                <div class="flex gap-3 pt-4 border-t dark:border-slate-800 mt-4">
-                    <button type="button" onclick="prevStep(1)" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-3.5 rounded-2xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition">Kembali</button>
-                    <button type="button" onclick="nextStep(3)" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none">Lanjut ke Pemain</button>
-                </div>
+            
+            <div class="text-center mb-8">
+                <span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-emerald-200 dark:border-emerald-800">Formulir Resmi</span>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mt-2">Pendaftaran Liga AFKAB Kediri</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Lengkapi seluruh tahapan data dengan benar dan teliti.</p>
             </div>
+            
+            <form id="registrationForm" class="space-y-6">
+                <!-- STEP 1: BIODATA TIM -->
+                <div class="step-content space-y-4" id="step-1">
+                    <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">1. Biodata Klub / Tim</h2>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Nama Tim / Klub</label>
+                        <input type="text" id="nama_tim" required placeholder="Contoh: Putra Kediri FC" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Asal Daerah / Kecamatan</label>
+                        <input type="text" id="asal_daerah" required placeholder="Contoh: Kecamatan Pare" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Nomor Kontak / WhatsApp Penanggung Jawab</label>
+                        <input type="number" id="kontak_pj" required placeholder="08xxxxxxxxxx" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Alamat Email Klub / Penanggung Jawab</label>
+                        <input type="email" id="email_tim" required placeholder="Contoh: official@klub.com" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Kategori Tim</label>
+                        <select id="kategori_tim" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-900 dark:text-white">
+                            <option value="Putra">Putra</option>
+                            <option value="Putri">Putri</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Jersey Home</label>
+                        <input type="text" id="jersey_home" required placeholder="Contoh: Merah-Hitam-Putih" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">Jersey Away</label>
+                        <input type="text" id="jersey_away" required placeholder="Contoh: Putih-Biru-Biru" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white">
+                    </div>
+                    <button type="button" onclick="nextStep(2)" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none mt-4 flex justify-center items-center gap-2">Lanjut ke Official <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></button>
+                </div>
 
-            <!-- STEP 3: BIODATA 18 PEMAIN -->
-            <div class="step-content hidden space-y-4" id="step-3">
-                <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">3. Biodata Pemain</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Lengkapi data diri dan posisi masing-masing pemain, serta cantumkan link Google Drive untuk pas foto.</p>
-                
-                <div id="pemainContainer" class="space-y-4 max-h-[500px] overflow-y-auto p-3 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-800/40"></div>
-
-                <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                    <button type="button" onclick="prevStep(2)" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-3.5 rounded-2xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition">Kembali</button>
+                <!-- STEP 2: BIODATA OFFICIAL -->
+                <div class="step-content hidden space-y-4" id="step-2">
+                    <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">2. Biodata Official Tim</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Isi data 5 Official berikut sesuai struktur yang ada (Kosongkan jika jabatan pada nomor tersebut tidak tersedia).</p>
                     
-                    <!-- Tombol Simpan Draft Baru -->
-                    <button type="button" onclick="simpanDraftSementara(true)" class="w-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 py-3.5 rounded-2xl font-bold text-sm hover:bg-amber-200 dark:hover:bg-amber-900/60 transition border border-amber-200 dark:border-amber-800">Simpan Draft & Keluar</button>
+                    <div id="officialContainer" class="space-y-4"></div>
+
+                    <div class="flex gap-3 pt-4 border-t dark:border-slate-800 mt-4">
+                        <button type="button" onclick="prevStep(1)" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-3.5 rounded-2xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition">Kembali</button>
+                        <button type="button" onclick="nextStep(3)" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none">Lanjut ke Pemain</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: BIODATA 18 PEMAIN -->
+                <div class="step-content hidden space-y-4" id="step-3">
+                    <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">3. Biodata Pemain</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Lengkapi data diri dan posisi masing-masing pemain, serta cantumkan link Google Drive untuk pas foto.</p>
                     
-                    <button type="button" onclick="nextStep(4)" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none">Lanjut ke Dokumen</button>
+                    <div id="pemainContainer" class="space-y-4 max-h-[500px] overflow-y-auto p-3 border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-800/40"></div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                        <button type="button" onclick="prevStep(2)" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-3.5 rounded-2xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition">Kembali</button>
+                        <button type="button" onclick="simpanDraftSementara(true)" class="w-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 py-3.5 rounded-2xl font-bold text-sm hover:bg-amber-200 dark:hover:bg-amber-900/60 transition border border-amber-200 dark:border-amber-800">Simpan Draft & Keluar</button>
+                        <button type="button" onclick="nextStep(4)" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none">Lanjut ke Dokumen</button>
+                    </div>
                 </div>
+
+                <!-- STEP 4: DOKUMEN PENDUKUNG & FINALISASI -->
+                <div class="step-content hidden space-y-4" id="step-4">
+                    <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">4. Dokumen Pendukung</h2>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Dokumen Pendukung Pemain</label>
+                        <input type="file" id="dokumen_pemain" accept=".pdf" required class="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-400 transition cursor-pointer">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                            <b>Ket:</b> Dokumen ini berisi KTP/KIA dan Kartu Keluarga (KK), jadikan dalam 1 (satu) Dokumen dan Urutkan sesuai dengan Urutan Daftar Pemain yang Tim Anda Daftarkan. (Format: PDF) (Maksimal 2 Mb)
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Foto Bukti Pembayaran</label>
+                        <input type="file" id="bukti_pembayaran" accept=".pdf" required class="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-400 transition cursor-pointer">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                            <b>Ket:</b> Bukti transfer biaya pendaftaran. (Format: PDF) (Maksimal 500kb)
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Foto / Scan Akta Team</label>
+                        <input type="file" id="akta_tim" accept=".pdf" required class="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-400 transition cursor-pointer">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                            <b>Ket:</b> Akta pendirian/SK/Surat legalitas resmi tim. (Format: PDF) (Maksimal 500kb)
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-start bg-emerald-50/60 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-800 gap-3 mt-2">
+                        <input type="checkbox" id="pernyataan" required class="w-5 h-5 text-emerald-600 rounded mt-0.5 cursor-pointer">
+                        <label class="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">Saya menyatakan bahwa seluruh data dan dokumen yang diunggah adalah benar dan dapat dipertanggungjawabkan sesuai regulasi liga.</label>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="prevStep(3)" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-3.5 rounded-2xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition">Kembali</button>
+                        <button type="submit" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none">Kirim Pendaftaran</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-xs text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md transition-colors duration-300 relative z-10">
+        &copy; 2026 Asosiasi Futsal Kabupaten (AFKAB) Kediri. Hak Cipta Dilindungi.
+    </footer>
+
+    <!-- MODAL LOGIN ADMIN -->
+    <div id="loginModal" class="modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm p-8 rounded-3xl shadow-2xl z-50 border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+            <button onclick="toggleModal('loginModal')" class="absolute top-4 right-4 bg-slate-100 dark:bg-slate-800 rounded-full p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 font-bold z-10 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-200 dark:border-emerald-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                </svg>
             </div>
-
-            <!-- STEP 4: DOKUMEN PENDUKUNG & FINALISASI -->
-            <div class="step-content hidden space-y-4" id="step-4">
-                <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-2 flex items-center gap-2">4. Dokumen Pendukung</h2>
-                
-                <!-- Dokumen Pemain (KTP/KIA/KK) -->
-                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Dokumen Pendukung Pemain</label>
-                    <input type="file" id="dokumen_pemain" accept=".pdf" required 
-                        class="w-full text-sm text-slate-500 dark:text-slate-400
-                        file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 
-                        file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 
-                        hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-400 transition cursor-pointer">
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                        <b>Ket:</b> Dokumen ini berisi KTP/KIA dan Kartu Keluarga (KK), jadikan dalam 1 (satu) Dokumen dan Urutkan sesuai dengan Urutan Daftar Pemain yang Tim Anda Daftarkan. (Format: PDF) (Maksimal 2 Mb)
-                    </p>
-                </div>
-
-                <!-- Bukti Pembayaran -->
-                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Foto Bukti Pembayaran</label>
-                    <input type="file" id="bukti_pembayaran" accept=".pdf" required 
-                        class="w-full text-sm text-slate-500 dark:text-slate-400
-                        file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 
-                        file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 
-                        hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-400 transition cursor-pointer">
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                        <b>Ket:</b> Bukti transfer biaya pendaftaran. (Format: PDF) (Maksimal 500kb)
-                    </p>
-                </div>
-
-                <!-- Akta Tim -->
-                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Upload Foto / Scan Akta Team</label>
-                    <input type="file" id="akta_tim" accept=".pdf" required 
-                        class="w-full text-sm text-slate-500 dark:text-slate-400
-                        file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 
-                        file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 
-                        hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-400 transition cursor-pointer">
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                        <b>Ket:</b> Akta pendirian/SK/Surat legalitas resmi tim. (Format: PDF) (Maksimal 500kb)
-                    </p>
-                </div>
-                
-                <div class="flex items-start bg-emerald-50/60 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-800 gap-3 mt-2">
-                    <input type="checkbox" id="pernyataan" required class="w-5 h-5 text-emerald-600 rounded mt-0.5 cursor-pointer">
-                    <label class="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">Saya menyatakan bahwa seluruh data dan dokumen yang diunggah adalah benar dan dapat dipertanggungjawabkan sesuai regulasi liga.</label>
-                </div>
-
-                <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="prevStep(3)" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-3.5 rounded-2xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition">Kembali</button>
-                    <button type="submit" class="w-full bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 dark:shadow-none">Kirim Pendaftaran</button>
-                </div>
+            <div class="text-center mb-6">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Admin Panel</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Autentikasi khusus panitia liga</p>
             </div>
-        </form>
+            <div class="space-y-4">
+                <input type="text" id="user" placeholder="Username" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 text-slate-900 dark:text-white transition">
+                <input type="password" id="pass" placeholder="Password" class="w-full p-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 text-slate-900 dark:text-white transition">
+                <button onclick="checkLogin()" class="w-full bg-slate-900 dark:bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-black dark:hover:bg-emerald-700 transition shadow-lg">Masuk Dashboard</button>
+            </div>
+        </div>
     </div>
 
     <!-- MODAL LOADING -->
     <div id="loadingModal" class="modal opacity-0 pointer-events-none fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
         <div class="bg-white dark:bg-slate-900 w-full max-w-sm p-8 rounded-3xl shadow-2xl text-center border border-slate-100 dark:border-slate-800 flex flex-col items-center">
-            <!-- Animasi Spinner -->
             <svg class="animate-spin h-14 w-14 text-emerald-600 mb-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -225,6 +262,22 @@
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
                 themeBtn.innerHTML = iconSun;
+            }
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+        }
+
+        function checkLogin() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if (u === "admin" && p === "123") {
+                window.location.href = "admin_6.html";
+            } else {
+                alert("Kredensial login salah!");
             }
         }
 
@@ -342,16 +395,10 @@
             `;
         }
 
-        // ================= FITUR DRAFT (LOCAL STORAGE) =================
-        
-        // 1. Fungsi menyimpan semua data isian ke memori browser
         function simpanDraftSementara(keluar = false) {
             let draft = {};
-            // Ambil semua input dan select di dalam form
             const inputs = document.querySelectorAll('#registrationForm input, #registrationForm select');
-            
             inputs.forEach(input => {
-                // Abaikan input tipe file (karena dilarang oleh sistem keamanan browser)
                 if (input.id && input.type !== 'file') {
                     if (input.type === 'checkbox') {
                         draft[input.id] = input.checked;
@@ -360,23 +407,18 @@
                     }
                 }
             });
-            
-            // Simpan ke Local Storage
             localStorage.setItem('draft_afkab_kediri', JSON.stringify(draft));
-            
             if (keluar) {
                 alert("Draft berhasil disimpan di perangkat ini! Anda aman untuk menutup halaman dan melanjutkannya nanti.");
-                window.location.href = "index.html"; // Kembali ke beranda
+                window.location.href = "sistempendaftaran.html";
             }
         }
 
-        // 2. Fungsi memuat kembali data saat halaman dibuka
         function muatDraft() {
             const saved = localStorage.getItem('draft_afkab_kediri');
             if (saved) {
                 const draft = JSON.parse(saved);
                 let adaData = false;
-                
                 for (const key in draft) {
                     const el = document.getElementById(key);
                     if (el && draft[key] !== '') {
@@ -388,8 +430,6 @@
                         adaData = true;
                     }
                 }
-                
-                // Jika ada data yang dipulihkan, tampilkan pemberitahuan di atas form
                 if(adaData) {
                     const banner = document.createElement('div');
                     banner.className = "bg-blue-50 border border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800 text-xs font-bold p-3 rounded-2xl mb-6 text-center animate-pulse";
@@ -400,10 +440,8 @@
             }
         }
 
-        // Jalankan fungsi muatDraft 0.5 detik setelah halaman dimuat (menunggu 18 pemain selesai di-generate JS)
         setTimeout(muatDraft, 500);
 
-        // 3. Simpan otomatis setiap ada perubahan (Auto-Save)
         document.getElementById('registrationForm').addEventListener('input', function() {
             simpanDraftSementara(false);
         });
@@ -425,7 +463,6 @@
             const kodeUnik = 'AFKAB-' + Math.floor(10000 + Math.random() * 90000);
             const namaTim = document.getElementById('nama_tim').value;
 
-            // Fetch Data 5 Official
             let listOfficial = [];
             let nama_manajer = '-', nama_coach = '-', nama_asst_coach = '-', nama_asst_coach_2 = '-', nama_medis = '-';
 
@@ -437,7 +474,6 @@
                 
                 if (nama && jabatan) {
                     listOfficial.push({ no: i, nama: nama, jabatan: jabatan, telp: telp, link_foto: linkFoto });
-
                     if (jabatan === 'Manager Team' && nama_manajer === '-') nama_manajer = nama;
                     if (jabatan === 'Head Coach' && nama_coach === '-') nama_coach = nama;
                     if (jabatan === 'Assistant Coach – I' && nama_asst_coach === '-') nama_asst_coach = nama;
@@ -446,7 +482,6 @@
                 }
             }
 
-            // Fetch Data 18 Pemain
             let listPemain = [];
             for (let i = 1; i <= 18; i++) {
                 const nama = document.getElementById(`pemain_${i}_nama`).value;
@@ -465,12 +500,10 @@
                 }
             }
 
-            // Ambil file upload PDF
             const filePemainInput = document.getElementById('dokumen_pemain').files[0];
             const fileBayarInput = document.getElementById('bukti_pembayaran').files[0];
             const fileAktaInput = document.getElementById('akta_tim').files[0];
 
-            // TAMPILKAN MODAL LOADING
             const loadingModal = document.getElementById('loadingModal');
             loadingModal.classList.remove('opacity-0', 'pointer-events-none');
 
@@ -537,7 +570,7 @@
                         pesan_admin: 'Pendaftaran sedang diverifikasi panitia.'
                     };
 
-                    const apiURL = 'https://sheetdb.io/api/v1/c6tesoe4jyz55'; 
+                    const apiURL = 'https://sheetdb.io/api/v1/3lux4m24q5w6c'; 
 
                     return fetch(apiURL, {
                         method: 'POST',
@@ -549,10 +582,7 @@
             .then(response => response.json())
             .then(() => {
                 loadingModal.classList.add('opacity-0', 'pointer-events-none');
-                
-                // HAPUS DRAFT KARENA SUDAH BERHASIL
                 localStorage.removeItem('draft_afkab_kediri'); 
-                
                 document.getElementById('kodeUnikTampil').innerText = kodeUnik;
                 const modal = document.getElementById('suksesModal');
                 modal.classList.remove('opacity-0', 'pointer-events-none');
