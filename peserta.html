@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=0">
     <title>Formulir Pendaftaran - Liga AFKAB Kediri</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="config.js"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
         if (localStorage.getItem('theme') === 'dark') {
@@ -274,7 +275,7 @@
         function checkLogin() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
-            if (u === "admin" && p === "123") {
+            if (u === "admin" && p === "eldoganteng123") {
                 window.location.href = "admin_6.html";
             } else {
                 alert("Kredensial login salah!");
@@ -570,7 +571,7 @@
                         pesan_admin: 'Pendaftaran sedang diverifikasi panitia.'
                     };
 
-                    const apiURL = 'https://sheetdb.io/api/v1/3lux4m24q5w6c'; 
+                    const publicApiURL = GLOBAL_API_URL; 
 
                     return fetch(apiURL, {
                         method: 'POST',

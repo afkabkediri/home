@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=0">
     <title>Admin Dashboard - AFKAB Kediri</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="config.js"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
     </script>
@@ -78,6 +79,7 @@
             <button onclick="switchTab('klasemen')" id="btn-klasemen" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Klasemen</button>
             <button onclick="switchTab('topskor')" id="btn-topskor" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Top Skor</button>
             <button onclick="switchTab('jadwal')" id="btn-jadwal" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Kelola Jadwal & Skor</button>
+            <button onclick="switchTab('pengaturanutama')" id="btn-pengaturanutama" class="tab-btn text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-2.5 rounded-xl text-sm whitespace-nowrap transition">Pengaturan Halaman Utama</button>
         </div>
 
         <!-- TAB 1: PENDAFTARAN -->
@@ -526,8 +528,56 @@
         </div>
     </div>
 
+    <!-- TAB PENGATURAN HALAMAN UTAMA -->
+<div id="tab-pengaturanutama" class="tab-content hidden">
+    <div class="max-w-xl mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="flex justify-between items-center mb-6 border-b dark:border-slate-800 pb-4">
+            <div>
+                <h2 class="font-black text-lg text-slate-900 dark:text-white mb-1">Pengaturan Halaman Utama</h2>
+                <p class="text-xs text-slate-500">Atur status on/off fitur dan sinkronkan langsung ke server.</p>
+            </div>
+            <button type="button" onclick="switchTab('pendaftaran')" class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3.5 py-2 rounded-xl transition">
+                &larr; Kembali
+            </button>
+        </div>
+        
+        <form id="formPengaturanUtama" class="space-y-4">
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Tampilkan Fitur Klasemen</label>
+                <select id="fitur_klasemen" class="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                    <option value="on">Aktif (On)</option>
+                    <option value="off">Nonaktif (Off)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Tampilkan Fitur Jadwal</label>
+                <select id="fitur_jadwal" class="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                    <option value="on">Aktif (On)</option>
+                    <option value="off">Nonaktif (Off)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Tampilkan Fitur Top Skor</label>
+                <select id="fitur_topskor" class="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                    <option value="on">Aktif (On)</option>
+                    <option value="off">Nonaktif (Off)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Tampilkan Fitur Galeri</label>
+                <select id="fitur_galeri" class="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white outline-none">
+                    <option value="on">Aktif (On)</option>
+                    <option value="off">Nonaktif (Off)</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-emerald-700 transition shadow-sm mt-2">Simpan & Sinkronkan ke Server</button>
+        </form>
+    </div>
+</div>
+
     <script>
-        const apiURL = 'https://sheetdb.io/api/v1/3lux4m24q5w6c'; 
+        const publicApiURL = GLOBAL_API_URL;
+        const apiURL = GLOBAL_API_URL;
         
         const themeBtn = document.getElementById('themeBtn');
         const iconMoon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>`;
@@ -1230,17 +1280,55 @@
                 const statusVal = document.getElementById('main_status').value;
                 const pesanVal = document.getElementById('main_pesan').value.trim();
 
-                if (statusVal === 'on') {
-                    localStorage.setItem('afkab_maintenance_active', 'true');
-                } else {
-                    localStorage.setItem('afkab_maintenance_active', 'false');
-                }
+                // 1. Simpan ke localStorage sebagai backup
+                localStorage.setItem('afkab_maintenance_active', statusVal === 'on' ? 'true' : 'false');
+                if (pesanVal) localStorage.setItem('afkab_maintenance_msg', pesanVal);
 
-                if (pesanVal) {
-                    localStorage.setItem('afkab_maintenance_msg', pesanVal);
-                }
+                // 2. Tampilkan status loading pada tombol
+                const btnSubmit = formMaintenanceAdmin.querySelector('button[type="submit"]');
+                const originalText = btnSubmit.innerText;
+                btnSubmit.innerText = "Menyimpan ke server...";
+                btnSubmit.disabled = true;
 
-                showNotif("Pengaturan mode maintenance berhasil diperbarui!");
+                // 3. Kirim pembaruan ke SheetDB
+                const sheet = 'maintenance';
+                fetch(`${apiURL}?sheet=${sheet}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const updateData = { status: statusVal, pesan: pesanVal };
+
+                        // Cek apakah data konfigurasi sudah pernah dibuat di Google Sheets
+                        if (data && data.length > 0 && data[0].id) {
+                            // Update (PATCH) baris konfigurasi yang ada
+                            const configId = data[0].id;
+                            return fetch(`${apiURL}/id/${configId}?sheet=${sheet}`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ data: updateData })
+                            });
+                        } else {
+                            // Buat (POST) baris konfigurasi baru jika sheet masih kosong
+                            updateData.id = 'CONF-1';
+                            return fetch(`${apiURL}?sheet=${sheet}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ data: [updateData] })
+                            });
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        showNotif("Pengaturan mode maintenance berhasil diperbarui ke server!");
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Gagal menyinkronkan dengan database server. Data hanya tersimpan di lokal.");
+                    })
+                    .finally(() => {
+                        // Kembalikan tombol seperti semula
+                        btnSubmit.innerText = originalText;
+                        btnSubmit.disabled = false;
+                    });
             });
         }
 
@@ -1317,6 +1405,120 @@
                 if(icon) icon.classList.remove('rotate-180');
             });
         });
+
+        // Memuat data pengaturan utama saat admin membuka halaman
+function loadPengaturanUtama() {
+    fetch(`${apiURL}?sheet=pengaturan_utama&t=${new Date().getTime()}`)
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data) && data.length > 0) {
+                const cfg = data[0];
+                if(document.getElementById('fitur_klasemen')) document.getElementById('fitur_klasemen').value = cfg.klasemen || 'on';
+                if(document.getElementById('fitur_jadwal')) document.getElementById('fitur_jadwal').value = cfg.jadwal || 'on';
+                if(document.getElementById('fitur_topskor')) document.getElementById('fitur_topskor').value = cfg.topskor || 'on';
+                if(document.getElementById('fitur_galeri')) document.getElementById('fitur_galeri').value = cfg.galeri || 'on';
+            }
+        })
+        .catch(err => console.log("Gagal memuat pengaturan utama dari server."));
+}
+
+        // Tangani penyimpanan form pengaturan utama ke SheetDB
+        const formPengaturanUtama = document.getElementById('formPengaturanUtama');
+        if (formPengaturanUtama) {
+            formPengaturanUtama.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const klasemenVal = document.getElementById('fitur_klasemen').value;
+                const jadwalVal = document.getElementById('fitur_jadwal').value;
+                const topskorVal = document.getElementById('fitur_topskor').value;
+                const galeriVal = document.getElementById('fitur_galeri').value;
+
+                const btnSubmit = formPengaturanUtama.querySelector('button[type="submit"]');
+                const originalText = btnSubmit.innerText;
+                btnSubmit.innerText = "Menyimpan ke server...";
+                btnSubmit.disabled = true;
+
+                const sheet = 'pengaturan_utama';
+                fetch(`${apiURL}?sheet=${sheet}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const updateData = { 
+                            klasemen: klasemenVal, 
+                            jadwal: jadwalVal, 
+                            topskor: topskorVal, 
+                            galeri: galeriVal 
+                        };
+
+                        if (Array.isArray(data) && data.length > 0 && data[0].id) {
+                            const configId = data[0].id;
+                            return fetch(`${apiURL}/id/${configId}?sheet=${sheet}`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ data: updateData })
+                            });
+                        } else {
+                            updateData.id = 'CONF-MAIN-1';
+                            return fetch(`${apiURL}?sheet=${sheet}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ data: [updateData] })
+                            });
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        showNotif("Pengaturan halaman utama berhasil disinkronkan ke server!");
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Gagal menyinkronkan dengan database server.");
+                    })
+                    .finally(() => {
+                        btnSubmit.innerText = originalText;
+                        btnSubmit.disabled = false;
+                    });
+            });
+        }
+
+        // Panggil fungsi pemuatan data saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPengaturanUtama();
+        });
+
+            function cekPengaturanUtamaAdmin() {
+        fetch(`${apiURL}?sheet=pengaturan_utama&t=${new Date().getTime()}`)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    const cfg = data[0];
+                    
+                    // Pemetaan tab admin dan kunci konfigurasinya
+                    const pengaturanFitur = {
+                        'klasemen': cfg.klasemen,
+                        'topskor': cfg.topskor,
+                        'jadwal': cfg.jadwal,
+                        'galeri': cfg.galeri // Jika ada tab galeri di admin
+                    };
+
+                    for (const [tabId, status] of Object.entries(pengaturanFitur)) {
+                        if (status === 'off') {
+                            // Sembunyikan tombol tab di navigasi utama admin
+                            const btnTab = document.getElementById('btn-' + tabId);
+                            if (btnTab) btnTab.style.display = 'none';
+
+                            // Sembunyikan konten tab terkait
+                            const contentTab = document.getElementById('tab-' + tabId);
+                            if (contentTab) contentTab.style.display = 'none';
+                        }
+                    }
+                }
+            })
+            .catch(err => console.log("Gagal memuat pengaturan utama admin."));
+    }
+
+    // Panggil fungsi ini saat halaman admin dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+        cekPengaturanUtamaAdmin();
+    });
 
         // Inisialisasi awal
         loadDataPendaftaran();
